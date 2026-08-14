@@ -60,6 +60,7 @@ import {
   useReceitaPorOrigem,
 } from './useDashboardResumo';
 import { useFinanceiroMensal } from './useFinanceiroMensal';
+import { useLancamentos } from "./useLancamentos";
 import {
   useCanaisConexao,
   useLogSincronizacao,
@@ -2579,15 +2580,291 @@ function Calendar({ t, imoveis }) {
   );
 }
 
+function SeletorImovel({ t, imoveis, imovelId, setImovelId }) {
+  if (imoveis.length <= 1) return null;
+  return (
+    <select
+      value={imovelId}
+      onChange={(e) => setImovelId(e.target.value)}
+      className="rounded-lg px-2 py-1.5 text-[12px] outline-none"
+      style={inputStyleFn(t)}
+    >
+      {imoveis.map((im) => <option key={im.id} value={im.id}>{im.nome}</option>)}
+    </select>
+  );
+}
+
+function PeriodoSeletorReal({ t, deIdx, ateIdx, setDeIdx, setAteIdx }) {
+  return (
+    <div className="flex items-center gap-2 text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>
+      <span>De</span>
+      <select value={deIdx} onChange={(e) => { const v = Number(e.target.value); setDeIdx(v); if (v > ateIdx) setAteIdx(v); }} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+        {MESES.map((m, i) => <option key={m.key} value={i}>{m.label}</option>)}
+      </select>
+      <span>até</span>
+      <select value={ateIdx} onChange={(e) => { const v = Number(e.target.value); setAteIdx(v); if (v < deIdx) setDeIdx(v); }} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+        {MESES.map((m, i) => <option key={m.key} value={i}>{m.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function Financeiro({ t, imoveis }) {
+  const [imovelId, setImovelId] = useState(imoveis[0]?.id ?? "");
+  const imovel = imoveis.find((im) => im.id === imovelId) ?? imoveis[0];
+  const unidadeIds = useMemo(() => (imovel?.unidades ?? []).map((u) => u.id), [imovel]);
+
+  const [deIdx, setDeIdx] = useState(MESES.length - 6);
+  const [ateIdx, setAteIdx] = useState(MESES.length - 1);
+  const [filtroTipo, setFiltroTipo] = useState("Todos");
+
+  const { data: lancamentos = [], isLoading } = useLancamentos(imovel?.id, unidadeIds, MESES[deIdx].key, MESES[ateIdx].key);
+
+  const entradas = lancamentos.filter((l) => l.tipo === "receita").reduce((s, l) => s + l.valor, 0);
+  const saidas = lancamentos.filter((l) => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0);
+  const saldoPeriodo = entradas - saidas;
+
+  const serieFluxo = MESES.slice(deIdx, ateIdx + 1).map((m) => {
+    const doMes = lancamentos.filter((l) => l.mes === m.key);
+    const ent = doMes.filter((l) => l.tipo === "receita").reduce((s, l) => s + l.valor, 0);
+    const sai = doMes.filter((l) => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0);
+    return { label: m.label, entradas: ent, saidas: sai, saldo: ent - sai };
+  });
+
+  const filtrados = lancamentos.filter((l) => filtroTipo === "Todos" || l.tipo === filtroTipo);
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <SeletorImovel t={t} imoveis={imoveis} imovelId={imovelId} setImovelId={setImovelId} />
+          <PeriodoSeletorReal t={t} deIdx={deIdx} ateIdx={ateIdx} setDeIdx={setDeIdx} setAteIdx={setAteIdx} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <KpiCard t={t} icon={ArrowUpRight} label="Entradas no período" value={money(entradas)} />
+        <KpiCard t={t} icon={ArrowDownRight} label="Saídas no período" value={money(saidas)} />
+        <KpiCard t={t} icon={TrendingUp} label="Saldo do período" value={money(saldoPeriodo)} hero />
+        <KpiCard t={t} icon={Wallet} label="Lançamentos" value={String(lancamentos.length)} mono={false} />
+      </div>
+
+      <div className="rounded-2xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Fluxo de caixa</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <ComposedChart data={serieFluxo}>
+            <CartesianGrid strokeDasharray="3 3" stroke={t.border} vertical={false} />
+            <XAxis dataKey="label" stroke={t.textMuted} fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+            <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
+            <Legend wrapperStyle={{ fontSize: 12, fontFamily: FONT_BODY }} />
+            <Bar dataKey="entradas" name="Entradas" fill={t.positive} radius={[6, 6, 0, 0]} barSize={16} />
+            <Bar dataKey="saidas" name="Saídas" fill={t.negative} radius={[6, 6, 0, 0]} barSize={16} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="rounded-2xl p-5 overflow-x-auto" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Lançamentos do período</h3>
+          <div className="flex gap-1">
+            {["Todos", "receita", "despesa"].map((op) => (
+              <button key={op} onClick={() => setFiltroTipo(op)} className="text-[11px] px-2.5 py-1 rounded-lg font-medium" style={{ fontFamily: FONT_BODY, background: filtroTipo === op ? t.primarySoft : "transparent", color: filtroTipo === op ? t.primary : t.textMuted, border: `1px solid ${filtroTipo === op ? t.primary : t.border}` }}>
+                {op === "Todos" ? "Todos" : op === "receita" ? "Receitas" : "Despesas"}
+              </button>
+            ))}
+          </div>
+        </div>
+        {isLoading ? (
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Carregando...</p>
+        ) : (
+          <table className="w-full text-[12px] min-w-[760px]" style={{ fontFamily: FONT_BODY, color: t.text }}>
+            <thead>
+              <tr className="text-left" style={{ color: t.textMuted }}>
+                <th className="py-2 pr-3">Data</th><th className="py-2 pr-3">Unidade</th>
+                <th className="py-2 pr-3">Categoria</th><th className="py-2 pr-3">Hóspede / Descrição</th>
+                <th className="py-2 pr-3">Tipo</th><th className="py-2 pr-3">Valor</th><th className="py-2 pr-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtrados.slice(0, 100).map((l) => (
+                <tr key={l.id} className="border-t" style={{ borderColor: t.border }}>
+                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO }}>{l.data ? new Date(l.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+                  <td className="py-1.5 pr-3">{l.unidade ?? "Geral"}</td>
+                  <td className="py-1.5 pr-3">{l.categoria}</td>
+                  <td className="py-1.5 pr-3">{l.hospede ?? l.descricao ?? "—"}</td>
+                  <td className="py-1.5 pr-3"><Badge t={t} tone={l.tipo === "receita" ? "positive" : "negative"}>{l.tipo === "receita" ? "Receita" : "Despesa"}</Badge></td>
+                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO, color: l.tipo === "receita" ? t.positive : t.negative }}>{l.tipo === "receita" ? "+" : "−"}{money(l.valor)}</td>
+                  <td className="py-1.5 pr-3"><Badge t={t}>{l.status}</Badge></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {filtrados.length === 0 && !isLoading && <p className="text-[12px] py-3" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Nenhum lançamento no período selecionado.</p>}
+        {filtrados.length > 100 && <p className="text-[11px] mt-2" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Mostrando 100 de {filtrados.length} lançamentos — refine o período para ver todos.</p>}
+      </div>
+    </div>
+  );
+}
+function Despesas({ t, imoveis }) {
+  const [imovelId, setImovelId] = useState(imoveis[0]?.id ?? "");
+  const imovel = imoveis.find((im) => im.id === imovelId) ?? imoveis[0];
+  const unidadeIds = useMemo(() => (imovel?.unidades ?? []).map((u) => u.id), [imovel]);
+
+  const [deIdx, setDeIdx] = useState(MESES.length - 6);
+  const [ateIdx, setAteIdx] = useState(MESES.length - 1);
+  const [filtroCategoria, setFiltroCategoria] = useState("Todas");
+
+  const { data: lancamentos = [], isLoading } = useLancamentos(imovel?.id, unidadeIds, MESES[deIdx].key, MESES[ateIdx].key);
+  const despesas = lancamentos.filter((l) => l.tipo === "despesa");
+
+  const categorias = useMemo(() => ["Todas", ...Array.from(new Set(despesas.map((d) => d.categoria)))], [despesas]);
+  const filtradas = despesas.filter((d) => filtroCategoria === "Todas" || d.categoria === filtroCategoria);
+
+  const totalGerais = despesas.filter((d) => !d.unidade).reduce((s, d) => s + d.valor, 0);
+  const totalEspecificas = despesas.filter((d) => d.unidade).reduce((s, d) => s + d.valor, 0);
+  const total = totalGerais + totalEspecificas;
+
+  const porCategoria = useMemo(() => {
+    const map = {};
+    despesas.forEach((d) => { map[d.categoria] = (map[d.categoria] ?? 0) + d.valor; });
+    return Object.entries(map).map(([categoria, valor]) => ({ categoria, valor })).sort((a, b) => b.valor - a.valor);
+  }, [despesas]);
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <SeletorImovel t={t} imoveis={imoveis} imovelId={imovelId} setImovelId={setImovelId} />
+        <PeriodoSeletorReal t={t} deIdx={deIdx} ateIdx={ateIdx} setDeIdx={setDeIdx} setAteIdx={setAteIdx} />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <KpiCard t={t} icon={Receipt} label="Despesas gerais (rateadas)" value={money(totalGerais)} />
+        <KpiCard t={t} icon={Receipt} label="Despesas específicas" value={money(totalEspecificas)} />
+        <KpiCard t={t} icon={Receipt} label="Total no período" value={money(total)} hero />
+      </div>
+
+      <div className="rounded-2xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Despesas por categoria</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={porCategoria} layout="vertical" margin={{ left: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke={t.border} horizontal={false} />
+            <XAxis type="number" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+            <YAxis type="category" dataKey="categoria" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} width={110} />
+            <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
+            <Bar dataKey="valor" fill={t.negative} radius={[0, 6, 6, 0]} barSize={14} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="rounded-2xl p-5 overflow-x-auto" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Lançamentos de despesa</h3>
+          <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+            {categorias.map((c) => <option key={c}>{c}</option>)}
+          </select>
+        </div>
+        {isLoading ? (
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Carregando...</p>
+        ) : (
+          <table className="w-full text-[12px] min-w-[680px]" style={{ fontFamily: FONT_BODY, color: t.text }}>
+            <thead>
+              <tr className="text-left" style={{ color: t.textMuted }}>
+                <th className="py-2 pr-3">Competência</th><th className="py-2 pr-3">Unidade</th>
+                <th className="py-2 pr-3">Categoria</th><th className="py-2 pr-3">Descrição</th><th className="py-2 pr-3">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtradas.slice(0, 100).map((d) => (
+                <tr key={d.id} className="border-t" style={{ borderColor: t.border }}>
+                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO }}>{d.data ? new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+                  <td className="py-1.5 pr-3">{d.unidade ?? <Badge t={t} tone="gold">Geral</Badge>}</td>
+                  <td className="py-1.5 pr-3">{d.categoria}</td>
+                  <td className="py-1.5 pr-3">{d.descricao ?? "—"}</td>
+                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO, color: t.negative }}>{money(d.valor)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {filtradas.length === 0 && !isLoading && <p className="text-[12px] py-3" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Nenhuma despesa no período selecionado.</p>}
+      </div>
+    </div>
+  );
+}
+
+function Relatorios({ t, imoveis }) {
+  const [imovelId, setImovelId] = useState(imoveis[0]?.id ?? "");
+  const imovel = imoveis.find((im) => im.id === imovelId) ?? imoveis[0];
+  const unidadeIds = useMemo(() => (imovel?.unidades ?? []).map((u) => u.id), [imovel]);
+
+  const [deIdx, setDeIdx] = useState(0);
+  const [ateIdx, setAteIdx] = useState(MESES.length - 1);
+
+  const { data: lancamentos = [], isLoading } = useLancamentos(imovel?.id, unidadeIds, MESES[deIdx].key, MESES[ateIdx].key);
+  const receitas = lancamentos.filter((l) => l.tipo === "receita");
+  const despesas = lancamentos.filter((l) => l.tipo === "despesa");
+
+  const baixarCsv = (linhas, cabecalho, nomeArquivo) => {
+    const csv = [cabecalho.join(";"), ...linhas.map((l) => l.join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArquivo;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportarReceitas = () => baixarCsv(
+    receitas.map((r) => [r.data ?? "", r.unidade ?? "", r.categoria, (r.hospede ?? "").replace(/;/g, ","), r.valor.toFixed(2), r.status]),
+    ["Data", "Unidade", "Origem", "Hóspede", "Valor", "Status"],
+    `receitas_${MESES[deIdx].key}_a_${MESES[ateIdx].key}.csv`
+  );
+
+  const exportarDespesas = () => baixarCsv(
+    despesas.map((d) => [d.data ?? "", d.unidade ?? "Geral", d.categoria, (d.descricao ?? "").replace(/;/g, ","), d.valor.toFixed(2)]),
+    ["Competência", "Unidade", "Categoria", "Descrição", "Valor"],
+    `despesas_${MESES[deIdx].key}_a_${MESES[ateIdx].key}.csv`
+  );
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <SeletorImovel t={t} imoveis={imoveis} imovelId={imovelId} setImovelId={setImovelId} />
+        <PeriodoSeletorReal t={t} deIdx={deIdx} ateIdx={ateIdx} setDeIdx={setDeIdx} setAteIdx={setAteIdx} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+          <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Relatório de receitas</h3>
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{receitas.length} lançamentos · Total {money(receitas.reduce((s, r) => s + r.valor, 0))}</p>
+          <button onClick={exportarReceitas} disabled={isLoading || receitas.length === 0} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg w-fit" style={{ background: t.primary, color: "#fff", fontFamily: FONT_BODY, opacity: receitas.length === 0 ? 0.5 : 1 }}>
+            Baixar CSV
+          </button>
+        </div>
+        <div className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
+          <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Relatório de despesas</h3>
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{despesas.length} lançamentos · Total {money(despesas.reduce((s, d) => s + d.valor, 0))}</p>
+          <button onClick={exportarDespesas} disabled={isLoading || despesas.length === 0} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg w-fit" style={{ background: t.primary, color: "#fff", fontFamily: FONT_BODY, opacity: despesas.length === 0 ? 0.5 : 1 }}>
+            Baixar CSV
+          </button>
+        </div>
+      </div>
+      <p className="text-[11px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Os arquivos são gerados com os dados reais do período e imóvel selecionados acima, prontos para abrir no Excel.</p>
+    </div>
+  );
+}
+
 const NAV = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, ativo: true },
   { id: 'imoveis', label: 'Imóveis', icon: Building2, ativo: true },
-  { id: 'calendario', label: 'Calendário', icon: CalendarDays, ativo: true },
-  { id: 'channel', label: 'Channel Manager', icon: Link2, ativo: true },
-  { id: 'financeiro', label: 'Financeiro', icon: Wallet, ativo: false },
-  { id: 'despesas', label: 'Despesas', icon: Receipt, ativo: false },
-  { id: 'relatorios', label: 'Relatórios', icon: FileBarChart, ativo: false },
-];
+    { id: 'calendario', label: 'Calendário', icon: CalendarDays, ativo: true },
+      { id: 'channel', label: 'Channel Manager', icon: Link2, ativo: true },
+        { id: 'financeiro', label: 'Financeiro', icon: Wallet, ativo: true },
+          { id: 'despesas', label: 'Despesas', icon: Receipt, ativo: true },
+            { id: 'relatorios', label: 'Relatórios', icon: FileBarChart, ativo: true },];
 
 export default function App() {
   const [dark, setDark] = useState(false);
@@ -2738,6 +3015,9 @@ export default function App() {
           )}
           {view === 'calendario' && <Calendar t={t} imoveis={imoveis} />}
           {view === 'channel' && <ChannelManager t={t} imoveis={imoveis} />}
+          {view === 'financeiro' && <Financeiro t={t} imoveis={imoveis} />}
+          {view === 'despesas' && <Despesas t={t} imoveis={imoveis} />}
+          {view === 'relatorios' && <Relatorios t={t} imoveis={imoveis} />}
         </main>
       </div>
     </div>
