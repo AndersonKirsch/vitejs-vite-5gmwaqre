@@ -161,49 +161,29 @@ const CORES_ORIGEM = {
 /* unidade que as gerou.                                             */
 /* ---------------------------------------------------------------- */
 function computeBuilding(b) {
-  const ativas = b.unidades.filter((u) => u.situacao === 'Ativo');
-  const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + d.valor, 0);
-  const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
-  const receitaBruta = ativas.reduce((s, u) => s + u.receitaMes, 0);
-  const receitaLiquida = receitaBruta * 0.91;
-  const despesasEspecificasTotal = b.unidades.reduce(
-    (s, u) => s + u.despesasEspecificas,
-    0
-  );
-  const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
-  const lucro = receitaLiquida - despesasTotais;
-  const investimentoTotal = b.unidades.reduce(
-    (s, u) => s + u.valorAquisicao + u.valorReforma + u.valorMoveis,
-    0
-  );
-  const roiMensal = investimentoTotal ? (lucro / investimentoTotal) * 100 : 0;
-  const ocupacaoMedia = ativas.length
-    ? Math.round(ativas.reduce((s, u) => s + u.ocupacao, 0) / ativas.length)
-    : 0;
-  return {
-    ativas,
-    rateio,
-    despesasGeraisTotal,
-    receitaBruta,
-    receitaLiquida,
-    despesasEspecificasTotal,
-    despesasTotais,
-    lucro,
-    investimentoTotal,
-    roiMensal,
-    ocupacaoMedia,
-  };
-}
-
-function computeUnidade(u, rateio) {
-  const investimento = u.valorAquisicao + u.valorReforma + u.valorMoveis;
-  const rateioAplicado = u.situacao === 'Ativo' ? rateio : 0;
-  const despesaTotal = u.despesasEspecificas + rateioAplicado;
-  const lucro = u.receitaMes * 0.91 - despesaTotal;
-  const roiMensal = investimento ? (lucro / investimento) * 100 : 0;
-  return { investimento, rateioAplicado, despesaTotal, lucro, roiMensal };
-}
-
+    const ativas = b.unidades.filter((u) => u.situacao === 'Ativo');
+      const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
+        const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
+          const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
+            const receitaLiquida = receitaBruta * 0.91;
+              const despesasEspecificasTotal = b.unidades.reduce((s, u) => s + Number(u.despesasEspecificas ?? 0), 0);
+                const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
+                  const lucro = receitaLiquida - despesasTotais;
+                    const investimentoTotal = b.unidades.reduce((s, u) => s + Number(u.valorAquisicao ?? 0) + Number(u.valorReforma ?? 0) + Number(u.valorMoveis ?? 0), 0);
+                      const roiMensal = investimentoTotal > 0 ? (lucro / investimentoTotal) * 100 : 0;
+                        const ocupacaoMedia = ativas.length ? Math.round(ativas.reduce((s, u) => s + Number(u.ocupacao ?? 0), 0) / ativas.length) : 0;
+                          return { ativas, rateio, despesasGeraisTotal, receitaBruta, receitaLiquida, despesasEspecificasTotal, despesasTotais, lucro, investimentoTotal, roiMensal, ocupacaoMedia };
+                          }
+                          
+                          function computeUnidade(u, rateio) {
+                            const investimento = Number(u.valorAquisicao ?? 0) + Number(u.valorReforma ?? 0) + Number(u.valorMoveis ?? 0);
+                            const rateioAplicado = u.situacao === 'Ativo' ? Number(rateio ?? 0) : 0;
+                            const despesaTotal = Number(u.despesasEspecificas ?? 0) + rateioAplicado;
+                            const lucro = Number(u.receitaMes ?? 0) * 0.91 - despesaTotal;
+                            const roiMensal = investimento > 0 ? (lucro / investimento) * 100 : 0;
+                            return { investimento, rateioAplicado, despesaTotal, lucro, roiMensal };
+                          }
+                          
 /* ---------------------------------------------------------------- */
 /* SMALL UI PRIMITIVES                                               */
 /* ---------------------------------------------------------------- */
