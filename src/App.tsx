@@ -394,7 +394,7 @@ function Dashboard({ t, imoveis }) {
         {MESES.map((m, i) => (<option key={m.key} value={i}>{m.label}</option>))}
         </select>
         </div>
-        
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         <KpiCard
           t={t}
@@ -435,8 +435,6 @@ function Dashboard({ t, imoveis }) {
           label="Ocupação Média"
           value={`${ocupacaoMedia}%`}
         />
-        <KpiCard t={t} icon={Clock} label="Recebido Hoje" value={money(1240)} />
-        <KpiCard t={t} icon={Clock} label="A Receber" value={money(9840)} />
         <KpiCard
           t={t}
           icon={TrendingUp}
