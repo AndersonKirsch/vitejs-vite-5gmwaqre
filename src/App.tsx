@@ -332,19 +332,21 @@ function Dashboard({ t, imoveis }) {
     () => Object.values(unidadesPorImovel).flat(),
     [unidadesPorImovel]
   );
-    const [mesIdx, setMesIdx] = useState(MESES.length - 2);
-      const mesAtual = MESES[mesIdx];
+      const periodoInicio = `${MESES[0].key}-01`;
+        const ultimoMesKey = MESES[MESES.length - 1].key;
+          const ultAno = Number(ultimoMesKey.slice(0, 4));
+            const ultMes = Number(ultimoMesKey.slice(5, 7));
+              const proxAno = ultMes === 12 ? ultAno + 1 : ultAno;
+                const proxMes = ultMes === 12 ? 1 : ultMes + 1;
+                  const periodoFimExcl = `${proxAno}-${String(proxMes).padStart(2, '0')}-01`;
   const ultimosSeisMeses = MESES.slice(-6);
 
-  const { data: resumo } = useDashboardResumo(unidadesPorImovel, mesAtual.key);
+    const { data: resumo } = useDashboardResumo(unidadesPorImovel, periodoInicio, periodoFimExcl);
   const { data: tendencia = [] } = useTendenciaMensal(
     todasUnidadeIds,
     ultimosSeisMeses
   );
-  const { data: origemReservas = [] } = useReceitaPorOrigem(
-    todasUnidadeIds,
-    mesAtual.key
-  );
+  const { data: origemReservas = [] } = useReceitaPorOrigem(todasUnidadeIds, periodoInicio, periodoFimExcl);
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
   const receitaBruta = totais.receita;
@@ -388,12 +390,7 @@ function Dashboard({ t, imoveis }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-2 text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>
-        <span>Mês de referência</span>
-        <select value={mesIdx} onChange={(e) => setMesIdx(Number(e.target.value))} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
-        {MESES.map((m, i) => (<option key={m.key} value={i}>{m.label}</option>))}
-        </select>
-        </div>
+      <div className="text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>Período completo: {resumo?.periodo?.inicio ? new Date(resumo.periodo.inicio + 'T00:00:00').toLocaleDateString('pt-BR') : '—'} até {resumo?.periodo?.fim ? new Date(resumo.periodo.fim + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         <KpiCard
