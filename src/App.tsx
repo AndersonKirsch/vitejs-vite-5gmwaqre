@@ -1620,7 +1620,10 @@ function BuildingDetail({ t, building, onBack }) {
               style={{ color: t.text, fontFamily: FONT_BODY }}
             >
               <div>
-                <span className="font-medium">{d.categoria}</span>
+            <span style={{ fontFamily: FONT_MONO, color: t.textMuted, marginRight: 8 }}>
+                          {d.competencia ? new Date(d.competencia + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
+                                      </span>
+                                                      <span className="font-medium">{d.categoria}</span>
                 {d.descricao && (
                   <span style={{ color: t.textMuted }}> · {d.descricao}</span>
                 )}

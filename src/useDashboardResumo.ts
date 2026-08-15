@@ -41,7 +41,7 @@ export function useDashboardResumo(
       const inicioMes = `${mesChave}-01`;
       const fimMes = `${mesChave}-31`;
 
-      const [reservasRes, despEspecificasRes, rateioRes] = await Promise.all([
+              const [reservasRes, receitasManuaisRes, despEspecificasRes, rateioRes] = await Promise.all([
         supabase
           .from('reservas')
           .select('unidade_id, check_in, valor_liquido')
@@ -49,6 +49,12 @@ export function useDashboardResumo(
           .neq('status', 'Cancelado')
           .gte('check_in', inicioMes)
           .lte('check_in', fimMes),
+                supabase
+                        .from('receitas_manuais')
+                                .select('unidade_id, competencia, valor_liquido')
+                                        .in('unidade_id', todasUnidadeIds)
+                                                .gte('competencia', inicioMes)
+                                                        .lte('competencia', fimMes),
         supabase
           .from('despesas_especificas')
           .select('unidade_id, valor')
@@ -60,8 +66,8 @@ export function useDashboardResumo(
           .in('imovel_id', todosImovelIds)
           .eq('competencia', inicioMes),
       ]);
-
       if (reservasRes.error) throw reservasRes.error;
+      if (receitasManuaisRes.error) throw receitasManuaisRes.error;
       if (despEspecificasRes.error) throw despEspecificasRes.error;
       if (rateioRes.error) throw rateioRes.error;
 
@@ -82,6 +88,10 @@ export function useDashboardResumo(
         if (imovelId)
           porImovel[imovelId].receita += Number(r.valor_liquido ?? 0);
       }
+                  for (const r of receitasManuaisRes.data ?? []) {
+                            const imovelId = unidadeParaImovel[r.unidade_id];
+                                    if (imovelId) porImovel[imovelId].receita += Number(r.valor_liquido ?? 0);
+                  }
       for (const d of despEspecificasRes.data ?? []) {
         const imovelId = unidadeParaImovel[d.unidade_id];
         if (imovelId)
@@ -142,7 +152,7 @@ export function useTendenciaMensal(
       const inicio = `${mesesChaves[0].key}-01`;
       const fim = `${mesesChaves[mesesChaves.length - 1].key}-31`;
 
-      const [reservasRes, despesasEspRes, despesasGeraisRes] =
+          const [reservasRes, receitasManuaisRes, despesasEspRes, despesasGeraisRes] =
         await Promise.all([
           supabase
             .from('reservas')
@@ -151,6 +161,12 @@ export function useTendenciaMensal(
             .neq('status', 'Cancelado')
             .gte('check_in', inicio)
             .lte('check_in', fim),
+                  supabase
+                          .from('receitas_manuais')
+                                  .select('unidade_id, competencia, valor_liquido')
+                                          .in('unidade_id', todasUnidadeIds)
+                                                  .gte('competencia', inicio)
+                                                          .lte('competencia', fim),
           supabase
             .from('despesas_especificas')
             .select('unidade_id, competencia, valor')
@@ -164,6 +180,7 @@ export function useTendenciaMensal(
             .lte('competencia', fim),
         ]);
       if (reservasRes.error) throw reservasRes.error;
+      if (receitasManuaisRes.error) throw receitasManuaisRes.error;
       if (despesasEspRes.error) throw despesasEspRes.error;
       if (despesasGeraisRes.error) throw despesasGeraisRes.error;
 
@@ -171,6 +188,10 @@ export function useTendenciaMensal(
         const receita = (reservasRes.data ?? [])
           .filter((r) => r.check_in.slice(0, 7) === key)
           .reduce((s, r) => s + Number(r.valor_liquido ?? 0), 0);
+              const receitaManual = (receitasManuaisRes.data ?? [])
+                    .filter((r) => r.competencia.slice(0, 7) === key)
+                          .reduce((s, r) => s + Number(r.valor_liquido ?? 0), 0);
+                              const receitaTotal = receita + receitaManual;
         const despEsp = (despesasEspRes.data ?? [])
           .filter((d) => d.competencia.slice(0, 7) === key)
           .reduce((s, d) => s + Number(d.valor), 0);
@@ -181,9 +202,9 @@ export function useTendenciaMensal(
         return {
           mes: key,
           label,
-          receita,
+                receita: receitaTotal,
           despesa,
-          lucro: receita * 0.91 - despesa,
+                lucro: receitaTotal * 0.91 - despesa,
         };
       });
     },
