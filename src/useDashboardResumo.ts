@@ -39,7 +39,7 @@ export function useDashboardResumo(
     enabled: todasUnidadeIds.length > 0,
     queryFn: async (): Promise<ResumoDashboard> => {
       const inicioMes = `${mesChave}-01`;
-      const fimMes = `${mesChave}-32`;
+            const fimMes = `${mesChave}-31`;
 
               const [reservasRes, receitasManuaisRes, despEspecificasRes, rateioRes] = await Promise.all([
         supabase
@@ -150,7 +150,7 @@ export function useTendenciaMensal(
     enabled: todasUnidadeIds.length > 0 && mesesChaves.length > 0,
     queryFn: async (): Promise<MesTendencia[]> => {
       const inicio = `${mesesChaves[0].key}-01`;
-      const fim = `${mesesChaves[mesesChaves.length - 1].key}-32`;
+          const fim = `${mesesChaves[mesesChaves.length - 1].key}-31`;
 
           const [reservasRes, receitasManuaisRes, despesasEspRes, despesasGeraisRes] =
         await Promise.all([
@@ -235,7 +235,7 @@ export function useReceitaPorOrigem(unidadeIds: string[], mesChave: string) {
         .in('unidade_id', unidadeIds)
         .neq('status', 'Cancelado')
         .gte('check_in', `${mesChave}-01`)
-        .lte('check_in', `${mesChave}-32`);
+                .lte('check_in', `${mesChave}-31`);
       if (error) throw error;
 
       const porOrigem: Record<string, number> = {
