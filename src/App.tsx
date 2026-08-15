@@ -332,7 +332,8 @@ function Dashboard({ t, imoveis }) {
     () => Object.values(unidadesPorImovel).flat(),
     [unidadesPorImovel]
   );
-  const mesAtual = MESES[MESES.length - 1];
+    const [mesIdx, setMesIdx] = useState(MESES.length - 2);
+      const mesAtual = MESES[mesIdx];
   const ultimosSeisMeses = MESES.slice(-6);
 
   const { data: resumo } = useDashboardResumo(unidadesPorImovel, mesAtual.key);
@@ -387,6 +388,13 @@ function Dashboard({ t, imoveis }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-2 text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>
+        <span>Mês de referência</span>
+        <select value={mesIdx} onChange={(e) => setMesIdx(Number(e.target.value))} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+        {MESES.map((m, i) => (<option key={m.key} value={i}>{m.label}</option>))}
+        </select>
+        </div>
+        
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         <KpiCard
           t={t}
