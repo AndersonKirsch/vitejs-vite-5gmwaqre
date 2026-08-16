@@ -31,6 +31,7 @@ export interface Imovel {
   endereco: string | null;
   situacao: 'Ativo' | 'Inativo';
   foto: string | null;
+  valorAquisicao: number; valorReforma: number; valorMoveis: number;
   unidades: Unidade[];
   despesasGerais: DespesaGeral[];
 }
@@ -45,7 +46,7 @@ function mapImovel(row: any, rec: any = {}, ocupMed: any = {}): Imovel {
     cidade: row.cidade,
     endereco: row.endereco,
     situacao: row.situacao,
-    foto: row.foto_url,
+    foto: row.foto_url, valorAquisicao: Number(row.valor_aquisicao ?? 0), valorReforma: Number(row.valor_reforma ?? 0), valorMoveis: Number(row.valor_moveis ?? 0),
     unidades: (row.unidades ?? []).map((u: any) => ({
       id: u.id,
       numero: u.numero,
@@ -191,8 +192,8 @@ export function useRemoverDespesaGeral() {
 export function useEditarImovel() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (d: { id: string; nome: string; codigo: string; endereco: string; cidade: string; situacao: string }) => {
-      const { error } = await supabase.from('imoveis').update({ nome: d.nome, codigo: d.codigo, endereco: d.endereco, cidade: d.cidade, situacao: d.situacao }).eq('id', d.id);
+    mutationFn: async (d: { id: string; nome: string; codigo: string; endereco: string; cidade: string; situacao: string; foto: string; valorAquisicao: number; valorReforma: number; valorMoveis: number }) => {
+      const { error } = await supabase.from('imoveis').update({ nome: d.nome, codigo: d.codigo, foto_url: d.foto, valor_aquisicao: Number(d.valorAquisicao) || 0, valor_reforma: Number(d.valorReforma) || 0, valor_moveis: Number(d.valorMoveis) || 0, endereco: d.endereco, cidade: d.cidade, situacao: d.situacao }).eq('id', d.id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
