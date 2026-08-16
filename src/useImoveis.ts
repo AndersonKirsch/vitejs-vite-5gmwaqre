@@ -12,7 +12,7 @@ export interface Unidade {
   valorMoveis: number;
   metragem: number | null;
   quartos: number | null;
-  camas: number | null;
+  camas: number | null; receitaMes: number; despesasEspecificas: number; ocupacao: number;
 }
 
 export interface DespesaGeral {
@@ -37,7 +37,7 @@ export interface Imovel {
 
 const QUERY_KEY = ['imoveis'] as const;
 
-function mapImovel(row: any): Imovel {
+function mapImovel(row: any, rec: any = {}): Imovel {
   return {
     id: row.id,
     nome: row.nome,
@@ -55,7 +55,7 @@ function mapImovel(row: any): Imovel {
       valorMoveis: Number(u.valor_moveis),
       metragem: u.metragem,
       quartos: u.quartos,
-      camas: u.camas,
+      camas: u.camas, receitaMes: Number(rec[u.id] ?? 0), despesasEspecificas: 0, ocupacao: 0,
     })),
     despesasGerais: (row.despesas_gerais ?? []).map((d: any) => ({
       id: d.id,
@@ -76,7 +76,7 @@ export function useImoveis() {
         .select('*, unidades(*), despesas_gerais(*)')
         .order('nome');
       if (error) throw error;
-      return (data ?? []).map(mapImovel);
+      const rv = await supabase.from('reservas').select('unidade_id, valor_liquido').neq('status', 'Cancelado'); const rm = await supabase.from('receitas_manuais').select('unidade_id, valor_liquido'); const rec: any = {}; for (const r of rv.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); for (const r of rm.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); return (data ?? []).map((row: any) => mapImovel(row, rec));
     },
   });
 }
