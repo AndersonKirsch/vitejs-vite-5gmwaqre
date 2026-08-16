@@ -55,7 +55,7 @@ function mapImovel(row: any, rec: any = {}, ocupMed: any = {}): Imovel {
       valorMoveis: Number(u.valor_moveis),
       metragem: u.metragem,
       quartos: u.quartos,
-      camas: u.camas, receitaMes: Number(rec[u.id] ?? 0), despesasEspecificas: 0, ocupacao: Number(ocupMed[row.imovel_id] ?? 0),
+      camas: u.camas, receitaMes: Number(rec[u.id] ?? 0), despesasEspecificas: 0, ocupacao: Number(ocupMed[row.id] ?? 0),
     })),
     despesasGerais: (row.despesas_gerais ?? []).map((d: any) => ({
       id: d.id,
