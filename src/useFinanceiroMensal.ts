@@ -23,52 +23,32 @@ export function useFinanceiroMensal(
   mesFim: string
 ) {
   return useQuery({
-    queryKey: ['financeiro-mensal', imovelId, mesInicio, mesFim],
+    queryKey: ['financeiro-mensal', imovelId, unidadeIds, mesInicio, mesFim],
     enabled: !!imovelId && unidadeIds.length > 0,
     queryFn: async (): Promise<MesFinanceiro[]> => {
-      const [reservasRes, despEspecificasRes, rateioRes] = await Promise.all([
-        supabase
-          .from('reservas')
-          .select('unidade_id, check_in, check_out, valor_liquido, status')
-          .in('unidade_id', unidadeIds)
-          .neq('status', 'Cancelado')
-          .gte('check_out', `${mesInicio}-01`)
-          .lte('check_in', `${mesFim}-28`),
-        supabase
-          .from('despesas_especificas')
-          .select('unidade_id, competencia, valor')
-          .in('unidade_id', unidadeIds)
-          .gte('competencia', `${mesInicio}-01`)
-          .lte('competencia', `${mesFim}-28`),
-        supabase
-          .from('rateio_despesas_gerais')
-          .select(
-            'competencia, total_despesas_gerais, unidades_ativas, rateio_por_unidade'
-          )
-          .eq('imovel_id', imovelId)
-          .gte('competencia', `${mesInicio}-01`)
-          .lte('competencia', `${mesFim}-28`),
-      ]);
+      const inicio = `${mesInicio}-01`;
+      const fimExclusivo = primeiroDiaMesSeguinte(mesFim);
 
+      const reservasRes = await supabase.from('reservas').select('unidade_id, check_in, valor_liquido').in('unidade_id', unidadeIds).neq('status', 'Cancelado').gte('check_in', inicio).lt('check_in', fimExclusivo);
       if (reservasRes.error) throw reservasRes.error;
+
+      const receitasManuaisRes = await supabase.from('receitas_manuais').select('unidade_id, competencia, valor_liquido').in('unidade_id', unidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
+      if (receitasManuaisRes.error) throw receitasManuaisRes.error;
+
+      const despEspecificasRes = await supabase.from('despesas_especificas').select('unidade_id, competencia, valor').in('unidade_id', unidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
       if (despEspecificasRes.error) throw despEspecificasRes.error;
-      if (rateioRes.error) throw rateioRes.error;
+
+      const despGeraisRes = await supabase.from('despesas_gerais').select('competencia, valor').eq('imovel_id', imovelId).gte('competencia', inicio).lt('competencia', fimExclusivo);
+      if (despGeraisRes.error) throw despGeraisRes.error;
 
       const meses = listarMeses(mesInicio, mesFim);
 
       return meses.map(({ chave, label }) => {
-        const receita = (reservasRes.data ?? [])
-          .filter((r) => r.check_in.slice(0, 7) === chave)
-          .reduce((s, r) => s + Number(r.valor_liquido ?? 0), 0);
-
-        const despEspecificas = (despEspecificasRes.data ?? [])
-          .filter((d) => d.competencia.slice(0, 7) === chave)
-          .reduce((s, d) => s + Number(d.valor), 0);
-
-        const rateio = (rateioRes.data ?? []).find(
-          (r) => r.competencia.slice(0, 7) === chave
-        );
-        const despGerais = Number(rateio?.total_despesas_gerais ?? 0);
+        const receitaReservas = (reservasRes.data ?? []).filter((r) => r.check_in.slice(0, 7) === chave).reduce((s, r) => s + Number(r.valor_liquido ?? 0), 0);
+        const receitaManual = (receitasManuaisRes.data ?? []).filter((r) => r.competencia.slice(0, 7) === chave).reduce((s, r) => s + Number(r.valor_liquido ?? 0), 0);
+        const receita = receitaReservas + receitaManual;
+        const despEspecificas = (despEspecificasRes.data ?? []).filter((d) => d.competencia.slice(0, 7) === chave).reduce((s, d) => s + Number(d.valor ?? 0), 0);
+        const despGerais = (despGeraisRes.data ?? []).filter((d) => d.competencia.slice(0, 7) === chave).reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const despesasTotais = despGerais + despEspecificas;
         const lucro = receita - despesasTotais;
 
@@ -80,12 +60,20 @@ export function useFinanceiroMensal(
           despEspecificas,
           despesasTotais,
           lucro,
-          ocupacaoMedia: 0, // calcule a partir das diárias ocupadas / dias do mês, se precisar no relatório
-          roiMensal: 0, // divida `lucro` pelo investimento total do imóvel, disponível em unidades_investimento
+          ocupacaoMedia: 0,
+          roiMensal: 0,
         };
       });
     },
   });
+}
+
+function primeiroDiaMesSeguinte(mesChave: string) {
+  const ano = Number(mesChave.slice(0, 4));
+  const mes = Number(mesChave.slice(5, 7));
+  const proxAno = mes === 12 ? ano + 1 : ano;
+  const proxMes = mes === 12 ? 1 : mes + 1;
+  return `${proxAno}-${String(proxMes).padStart(2, '0')}-01`;
 }
 
 function listarMeses(inicio: string, fim: string) {

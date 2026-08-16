@@ -1169,7 +1169,7 @@ function NovaDespesaGeralForm({ t, onClose, onSave, numUnidadesAtivas }) {
 function BuildingDetail({ t, building, onBack }) {
   const [showUnidade, setShowUnidade] = useState(false);
   const [showDespesa, setShowDespesa] = useState(false);
-  const [deIdx, setDeIdx] = useState(MESES.length - 3);
+    const [deIdx, setDeIdx] = useState(0);
   const [ateIdx, setAteIdx] = useState(MESES.length - 1);
   const c = computeBuilding(building);
 
@@ -1308,26 +1308,26 @@ function BuildingDetail({ t, building, onBack }) {
           t={t}
           icon={CircleDollarSign}
           label="Receita bruta"
-          value={money(c.receitaBruta)}
+                    value={money(periodoTotais.receita)}
         />
         <KpiCard
           t={t}
           icon={Receipt}
           label="Despesas totais"
-          value={money(c.despesasTotais)}
+                    value={money(periodoTotais.despesasTotais)}
         />
         <KpiCard
           t={t}
           icon={TrendingUp}
           label="Lucro"
-          value={money(c.lucro)}
+                    value={money(periodoTotais.lucro)}
           hero
         />
         <KpiCard
           t={t}
           icon={Percent}
           label="ROI mensal"
-          value={`${c.roiMensal.toFixed(2)}%`}
+                    value={c.investimentoTotal > 0 ? `${((periodoTotais.lucro / c.investimentoTotal) * 100).toFixed(2)}%` : '0.00%'}
         />
       </div>
 
