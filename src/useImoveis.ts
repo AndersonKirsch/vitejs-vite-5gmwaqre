@@ -187,3 +187,14 @@ export function useRemoverDespesaGeral() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 }
+
+export function useEditarImovel() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (d: { id: string; nome: string; codigo: string; endereco: string; cidade: string; situacao: string }) => {
+      const { error } = await supabase.from('imoveis').update({ nome: d.nome, codigo: d.codigo, endereco: d.endereco, cidade: d.cidade, situacao: d.situacao }).eq('id', d.id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+}

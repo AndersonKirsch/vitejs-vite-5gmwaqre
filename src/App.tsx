@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import {
   useImoveis,
-  useAdicionarImovel,
+  useAdicionarImovel, useEditarImovel,
   useAdicionarUnidade,
   useRemoverUnidade,
   useAdicionarDespesaGeral,
@@ -1166,7 +1166,7 @@ function NovaDespesaGeralForm({ t, onClose, onSave, numUnidadesAtivas }) {
 /* ---------------------------------------------------------------- */
 /* DETALHE DO IMÓVEL (prédio) — unidades + despesas gerais           */
 /* ---------------------------------------------------------------- */
-function BuildingDetail({ t, building, onBack }) {
+function BuildingDetail({ t, building, onBack }) { const [editando, setEditando] = useState(false); const [ed, setEd] = useState({ nome: 0, codigo: 0, endereco: 0, cidade: 0, situacao: 0 } as any); const editarImovel = useEditarImovel();
   const [showUnidade, setShowUnidade] = useState(false);
   const [showDespesa, setShowDespesa] = useState(false);
     const [deIdx, setDeIdx] = useState(0);
@@ -1258,7 +1258,7 @@ function BuildingDetail({ t, building, onBack }) {
         style={{ color: t.textMuted, fontFamily: FONT_BODY }}
       >
         <ArrowLeft size={15} /> Voltar para imóveis
-      </button>
+      </button> <button onClick={() => { setEd({ nome: building.nome, codigo: building.codigo, endereco: building.endereco || String(), cidade: building.cidade || String(), situacao: building.situacao }); setEditando(true); }} className={'text-[12px] rounded-lg px-3 py-2 ml-3'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY }}>Editar imovel</button> {editando && (<div className={'rounded-2xl p-4 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'grid grid-cols-1 sm:grid-cols-2 gap-3'}><input value={ed.nome} onChange={(e) => setEd({ ...ed, nome: e.target.value })} placeholder={'Nome'} className={'rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /><input value={ed.codigo} onChange={(e) => setEd({ ...ed, codigo: e.target.value })} placeholder={'Codigo'} className={'rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /><input value={ed.endereco} onChange={(e) => setEd({ ...ed, endereco: e.target.value })} placeholder={'Endereco'} className={'rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /><input value={ed.cidade} onChange={(e) => setEd({ ...ed, cidade: e.target.value })} placeholder={'Cidade'} className={'rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div className={'flex gap-2 mt-3'}><button onClick={() => { editarImovel.mutate({ id: building.id, ...ed }); setEditando(false); }} className={'text-[12px] rounded-lg px-3 py-2'} style={{ background: t.primary, color: t.surface }}>Salvar</button><button onClick={() => setEditando(false)} className={'text-[12px] rounded-lg px-3 py-2'} style={{ background: t.bg, color: t.textMuted }}>Cancelar</button></div></div>)}
 
       <div
         className="rounded-2xl overflow-hidden flex flex-col sm:flex-row"
