@@ -374,7 +374,7 @@ function Dashboard({ t, imoveis }) {
     ? Math.round(receitaBruta / (totalUnidadesAtivas * 8))
     : 0;
   // TODO: calcular a partir de reservas (noites ocupadas / dias do mês / unidades ativas).
-  const ocupacaoMedia = 0;
+  const ocupacaoMedia = imoveis.length ? Math.round(imoveis.reduce((acc: any, b: any) => acc + Number(b.unidades?.[0]?.ocupacao ?? 0), 0) / imoveis.length) : 0;
 
   const porImovel = imoveis.map((b) => ({
     nome: b.nome.split(' ').slice(-1)[0],
