@@ -37,7 +37,7 @@ export interface Imovel {
 
 const QUERY_KEY = ['imoveis'] as const;
 
-function mapImovel(row: any, rec: any = {}): Imovel {
+function mapImovel(row: any, rec: any = {}, ocupMed: any = {}): Imovel {
   return {
     id: row.id,
     nome: row.nome,
@@ -55,7 +55,7 @@ function mapImovel(row: any, rec: any = {}): Imovel {
       valorMoveis: Number(u.valor_moveis),
       metragem: u.metragem,
       quartos: u.quartos,
-      camas: u.camas, receitaMes: Number(rec[u.id] ?? 0), despesasEspecificas: 0, ocupacao: 0,
+      camas: u.camas, receitaMes: Number(rec[u.id] ?? 0), despesasEspecificas: 0, ocupacao: Number(ocupMed[row.imovel_id] ?? 0),
     })),
     despesasGerais: (row.despesas_gerais ?? []).map((d: any) => ({
       id: d.id,
@@ -76,7 +76,7 @@ export function useImoveis() {
         .select('*, unidades(*), despesas_gerais(*)')
         .order('nome');
       if (error) throw error;
-      const rv = await supabase.from('reservas').select('unidade_id, valor_liquido').neq('status', 'Cancelado'); const rm = await supabase.from('receitas_manuais').select('unidade_id, valor_liquido'); const rec: any = {}; for (const r of rv.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); for (const r of rm.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); return (data ?? []).map((row: any) => mapImovel(row, rec));
+      const oc = await supabase.from('ocupacao_mensal').select('imovel_id, ocupacao_pct'); const ocm: any = {}; const occ: any = {}; for (const o of oc.data ?? []) { ocm[o.imovel_id] = (ocm[o.imovel_id] ?? 0) + Number(o.ocupacao_pct ?? 0); occ[o.imovel_id] = (occ[o.imovel_id] ?? 0) + 1; } const ocupMed: any = {}; for (const k in ocm) ocupMed[k] = Math.round(ocm[k] / occ[k]); const rv = await supabase.from('reservas').select('unidade_id, valor_liquido').neq('status', 'Cancelado'); const rm = await supabase.from('receitas_manuais').select('unidade_id, valor_liquido'); const rec: any = {}; for (const r of rv.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); for (const r of rm.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); return (data ?? []).map((row: any) => mapImovel(row, rec, ocupMed));
     },
   });
 }
