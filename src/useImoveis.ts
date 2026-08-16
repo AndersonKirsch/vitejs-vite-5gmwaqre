@@ -199,3 +199,12 @@ export function useEditarImovel() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 }
+
+export async function uploadFotoImovel(imovelId: string, file: File): Promise<string> {
+  const partes = file.name.split('.');
+  const ext = partes.length > 1 ? partes[partes.length - 1] : 'jpg';
+  const caminho = imovelId + '-' + Date.now() + '.' + ext;
+  const { error } = await supabase.storage.from('imoveis').upload(caminho, file, { upsert: true });
+  if (error) throw error;
+  return supabase.storage.from('imoveis').getPublicUrl(caminho).data.publicUrl;
+}
