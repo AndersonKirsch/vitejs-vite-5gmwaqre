@@ -31,7 +31,7 @@ export interface Imovel {
   endereco: string | null;
   situacao: 'Ativo' | 'Inativo';
   foto: string | null;
-  valorAquisicao: number; valorReforma: number; valorMoveis: number;
+  valorAquisicao: number; valorReforma: number; valorMoveis: number; noites: number;
   unidades: Unidade[];
   despesasGerais: DespesaGeral[];
 }
@@ -46,7 +46,7 @@ function mapImovel(row: any, rec: any = {}, ocupMed: any = {}): Imovel {
     cidade: row.cidade,
     endereco: row.endereco,
     situacao: row.situacao,
-    foto: row.foto_url, valorAquisicao: Number(row.valor_aquisicao ?? 0), valorReforma: Number(row.valor_reforma ?? 0), valorMoveis: Number(row.valor_moveis ?? 0),
+    foto: row.foto_url, noites: Number(noitesPorImovel[row.id] ?? 0), valorAquisicao: Number(row.valor_aquisicao ?? 0), valorReforma: Number(row.valor_reforma ?? 0), valorMoveis: Number(row.valor_moveis ?? 0),
     unidades: (row.unidades ?? []).map((u: any) => ({
       id: u.id,
       numero: u.numero,
@@ -77,7 +77,7 @@ export function useImoveis() {
         .select('*, unidades(*), despesas_gerais(*)')
         .order('nome');
       if (error) throw error;
-      const oc = await supabase.from('ocupacao_mensal').select('imovel_id, ocupacao_pct'); const ocm: any = {}; const occ: any = {}; for (const o of oc.data ?? []) { ocm[o.imovel_id] = (ocm[o.imovel_id] ?? 0) + Number(o.ocupacao_pct ?? 0); occ[o.imovel_id] = (occ[o.imovel_id] ?? 0) + 1; } const ocupMed: any = {}; for (const k in ocm) ocupMed[k] = Math.round(ocm[k] / occ[k]); const rv = await supabase.from('reservas').select('unidade_id, valor_liquido').neq('status', 'Cancelado'); const rm = await supabase.from('receitas_manuais').select('unidade_id, valor_liquido'); const rec: any = {}; for (const r of rv.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); for (const r of rm.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); return (data ?? []).map((row: any) => mapImovel(row, rec, ocupMed));
+      const oc = await supabase.from('ocupacao_mensal').select('imovel_id, ocupacao_pct, noites_total'); const noitesPorImovel: any = {}; for (const o of oc.data ?? []) noitesPorImovel[o.imovel_id] = (noitesPorImovel[o.imovel_id] ?? 0) + Number(o.noites_total ?? 0); const ocm: any = {}; const occ: any = {}; for (const o of oc.data ?? []) { ocm[o.imovel_id] = (ocm[o.imovel_id] ?? 0) + Number(o.ocupacao_pct ?? 0); occ[o.imovel_id] = (occ[o.imovel_id] ?? 0) + 1; } const ocupMed: any = {}; for (const k in ocm) ocupMed[k] = Math.round(ocm[k] / occ[k]); const rv = await supabase.from('reservas').select('unidade_id, valor_liquido').neq('status', 'Cancelado'); const rm = await supabase.from('receitas_manuais').select('unidade_id, valor_liquido'); const rec: any = {}; for (const r of rv.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); for (const r of rm.data ?? []) rec[r.unidade_id] = (rec[r.unidade_id] ?? 0) + Number(r.valor_liquido ?? 0); return (data ?? []).map((row: any) => mapImovel(row, rec, ocupMed));
     },
   });
 }
