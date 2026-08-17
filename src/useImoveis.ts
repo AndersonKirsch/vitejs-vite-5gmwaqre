@@ -213,7 +213,7 @@ export function useAdicionarReceita() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (d: { unidadeId: string; competencia: string; valor: number; categoria: string; descricao: string }) => {
-      const { error } = await supabase.from('receitas_manuais').insert({ unidade_id: d.unidadeId, categoria: d.categoria, descricao: d.descricao, valor_bruto: d.valor, valor_liquido: d.valor, forma_pagamento: 'Transferencia', status: 'Recebido', competencia: d.competencia });
+      const { error } = await supabase.from('receitas_manuais').insert({ unidade_id: d.unidadeId, categoria: d.categoria, descricao: d.descricao, valor_bruto: d.valor, forma_pagamento: 'Transferencia', status: 'Recebido', competencia: d.competencia });
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries(); },
