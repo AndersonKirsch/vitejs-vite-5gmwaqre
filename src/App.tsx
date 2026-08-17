@@ -394,9 +394,9 @@ function Dashboard({ t, imoveis }) {
         <KpiCard
           t={t}
           icon={CircleDollarSign}
-          label="Receita Bruta (mês)"
+          label={mesSel ? "Receita bruta do mês" : "Receita bruta do período"}
           value={money(receitaBruta)}
-          delta="+8,2% vs mês anterior"
+          
           deltaGood
         />
         <KpiCard
@@ -404,7 +404,7 @@ function Dashboard({ t, imoveis }) {
           icon={Wallet}
           label="Receita Líquida"
           value={money(receitaLiquida)}
-          delta="+6,9% vs mês anterior"
+          
           deltaGood
         />
         <KpiCard
@@ -412,7 +412,7 @@ function Dashboard({ t, imoveis }) {
           icon={Receipt}
           label="Despesas (gerais + específicas)"
           value={money(despesas)}
-          delta="+2,1% vs mês anterior"
+          
           deltaGood={false}
         />
         <KpiCard
@@ -420,7 +420,7 @@ function Dashboard({ t, imoveis }) {
           icon={TrendingUp}
           label="Lucro Líquido"
           value={money(lucro)}
-          delta="+9,4% vs mês anterior"
+          
           deltaGood
           hero
         />
