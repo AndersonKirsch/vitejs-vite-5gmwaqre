@@ -339,14 +339,14 @@ function Dashboard({ t, imoveis }) {
               const proxAno = ultMes === 12 ? ultAno + 1 : ultAno;
                 const proxMes = ultMes === 12 ? 1 : ultMes + 1;
                   const periodoFimExcl = `${proxAno}-${String(proxMes).padStart(2, '0')}-01`;
-  const ultimosSeisMeses = MESES.slice(-6);
+  const ultimosSeisMeses = MESES.slice(-6); const [mesSel, setMesSel] = useState(''); const mSelFim = mesSel ? (Number(mesSel.slice(5,7)) === 12 ? (Number(mesSel.slice(0,4))+1) + '-01-01' : mesSel.slice(0,4) + '-' + String(Number(mesSel.slice(5,7))+1).padStart(2, '0') + '-01') : ''; const pIni = mesSel ? mesSel + '-01' : periodoInicio; const pFim = mesSel ? mSelFim : periodoFimExcl;
 
-    const { data: resumo } = useDashboardResumo(unidadesPorImovel, periodoInicio, periodoFimExcl);
+    const { data: resumo } = useDashboardResumo(unidadesPorImovel, pIni, pFim);
   const { data: tendencia = [] } = useTendenciaMensal(
     todasUnidadeIds,
     ultimosSeisMeses
   );
-  const { data: origemReservas = [] } = useReceitaPorOrigem(todasUnidadeIds, periodoInicio, periodoFimExcl);
+  const { data: origemReservas = [] } = useReceitaPorOrigem(todasUnidadeIds, pIni, pFim);
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
   const receitaBruta = totais.receita;
@@ -388,7 +388,7 @@ function Dashboard({ t, imoveis }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>Período completo: {resumo?.periodo?.inicio ? new Date(resumo.periodo.inicio + 'T00:00:00').toLocaleDateString('pt-BR') : '—'} até {resumo?.periodo?.fim ? new Date(resumo.periodo.fim + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</div>
+      <div className="text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}><span>{mesSel ? 'Mês selecionado: ' : 'Período completo: '}</span>{resumo?.periodo?.inicio ? new Date(resumo.periodo.inicio + 'T00:00:00').toLocaleDateString('pt-BR') : '—'} até {resumo?.periodo?.fim ? new Date(resumo.periodo.fim + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</div><select value={mesSel} onChange={(e) => setMesSel(e.target.value)} className={'rounded-lg px-2 py-1 text-[12px] outline-none ml-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border, color: t.text, fontFamily: FONT_BODY }}><option value={''}>Período completo</option>{MESES.map((m) => (<option key={m.key} value={m.key}>{m.label}</option>))}</select>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         <KpiCard
@@ -433,7 +433,7 @@ function Dashboard({ t, imoveis }) {
         <KpiCard
           t={t}
           icon={TrendingUp}
-          label="ROI Mensal"
+          label="ROI do período"
           value={`${roiMensal}%`}
         />
         <KpiCard
