@@ -907,7 +907,7 @@ function NovaUnidadeForm({ t, onClose, onSave }) {
             className="rounded-lg px-3 py-2 text-sm outline-none"
             value={f.numero}
             onChange={set('numero')}
-            placeholder="Flat 08"
+            placeholder="Flat 01"
           />
         </Field>
         <Field t={t} label="Situação">
@@ -1024,27 +1024,7 @@ function NovaUnidadeForm({ t, onClose, onSave }) {
               const despesasEspecificas = Number(f.despesasEspecificas) || 0;
               const ocupacao = Number(f.ocupacao) || 0;
               const id = Date.now();
-              onSave({
-                id,
-                numero: f.numero,
-                situacao: f.situacao,
-                valorAquisicao: Number(f.valorAquisicao) || 0,
-                valorReforma: Number(f.valorReforma) || 0,
-                valorMoveis: Number(f.valorMoveis) || 0,
-                metragem: Number(f.metragem) || 0,
-                quartos: Number(f.quartos) || 0,
-                camas: Number(f.quartos) || 0,
-                receitaMes,
-                despesasEspecificas,
-                ocupacao,
-                historico: gerarHistoricoUnidade(
-                  receitaMes,
-                  despesasEspecificas,
-                  ocupacao,
-                  id
-                ),
-              });
-              onClose();
+              onSave({ numero: f.numero, situacao: f.situacao }); onClose();
             }
           }}
           className="px-4 py-2 rounded-lg text-sm font-medium"
