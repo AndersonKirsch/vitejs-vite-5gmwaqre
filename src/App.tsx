@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import {
   useImoveis,
-  useAdicionarImovel, useEditarImovel, uploadFotoImovel,
+  useAdicionarImovel, useEditarImovel, uploadFotoImovel, useAdicionarReceita,
   useAdicionarUnidade,
   useRemoverUnidade,
   useAdicionarDespesaGeral,
@@ -1144,7 +1144,7 @@ function NovaDespesaGeralForm({ t, onClose, onSave, numUnidadesAtivas }) {
 /* ---------------------------------------------------------------- */
 /* DETALHE DO IMÓVEL (prédio) — unidades + despesas gerais           */
 /* ---------------------------------------------------------------- */
-function BuildingDetail({ t, building, onBack }) { const [editando, setEditando] = useState(false); const [ed, setEd] = useState({ nome: 0, codigo: 0, endereco: 0, cidade: 0, situacao: 0 } as any); const editarImovel = useEditarImovel();
+function BuildingDetail({ t, building, onBack }) { const [editando, setEditando] = useState(false); const [ed, setEd] = useState({ nome: 0, codigo: 0, endereco: 0, cidade: 0, situacao: 0 } as any); const editarImovel = useEditarImovel(); const [showRec, setShowRec] = useState(false); const [rec, setRec] = useState({ unidadeId: '', competencia: '', valor: '', categoria: 'Aluguel mensal' }); const addReceita = useAdicionarReceita();
   const [showUnidade, setShowUnidade] = useState(false);
   const [showDespesa, setShowDespesa] = useState(false);
     const [deIdx, setDeIdx] = useState(0);
@@ -1588,7 +1588,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
             }}
           >
             <Plus size={14} /> Nova despesa geral
-          </button>
+          </button> <button onClick={() => setShowRec(true)} className={'text-[12px] rounded-lg px-3 py-2 ml-2'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY, alignSelf: 'flex-start', width: 'fit-content' }}>Nova receita</button> {showRec && (<div className={'rounded-2xl p-5 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Nova receita</div><div className={'text-[12px] mb-4'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Lance o valor recebido no mês para uma unidade</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Unidade</label><select value={rec.unidadeId} onChange={(e) => setRec({ ...rec, unidadeId: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }}><option value={''}>Selecione</option>{(building.unidades || []).map((u: any) => (<option key={u.id} value={u.id}>{u.numero}</option>))}</select></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Mês de referência</label><input type={'month'} value={rec.competencia} onChange={(e) => setRec({ ...rec, competencia: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Valor recebido (R$)</label><input type={'number'} value={rec.valor} onChange={(e) => setRec({ ...rec, valor: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Categoria</label><input type={'text'} value={rec.categoria} onChange={(e) => setRec({ ...rec, categoria: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'flex gap-2 mt-5 pt-4'} style={{ borderTop: 1 + 'px solid ' + t.border }}><button onClick={() => { if (!rec.unidadeId || !rec.competencia || !rec.valor) { alert('Preencha unidade, mês e valor'); return; } addReceita.mutate({ unidadeId: rec.unidadeId, competencia: rec.competencia + '-01', valor: Number(rec.valor), categoria: rec.categoria, descricao: rec.categoria }); setShowRec(false); setRec({ unidadeId: '', competencia: '', valor: '', categoria: 'Aluguel mensal' }); }} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.primary, color: t.surface, fontFamily: FONT_BODY }}>Salvar receita</button><button onClick={() => setShowRec(false)} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.bg, color: t.textMuted, border: 1 + 'px solid ' + t.border, fontFamily: FONT_BODY }}>Cancelar</button></div></div>)}
         </div>
         <div
           className="flex flex-col divide-y"
