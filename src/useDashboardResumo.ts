@@ -217,7 +217,7 @@ export function useReceitaPorOrigem(unidadeIds: string[], inicio: string, fimExc
         Direta: 0,
         Outros: 0,
       };
-      const rm = await supabase.from('receitas_manuais').select('valor_liquido, competencia').in('unidade_id', unidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo); for (const r of rm.data ?? []) porOrigem.Airbnb = (porOrigem.Airbnb ?? 0) + Number(r.valor_liquido ?? 0); for (const r of data ?? [])
+      const rm = await supabase.from('receitas_manuais').select('valor_liquido, competencia, categoria').in('unidade_id', unidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo); for (const r of rm.data ?? []) { const cat = String((r as any).categoria || ''); const chave = cat === 'Diárias' ? 'Airbnb' : (cat.indexOf('direta') >= 0 || cat.indexOf('Aluguel') >= 0 ? 'Direta' : 'Outros'); porOrigem[chave] = (porOrigem[chave] ?? 0) + Number(r.valor_liquido ?? 0); } for (const r of data ?? [])
         porOrigem[r.origem] =
           (porOrigem[r.origem] ?? 0) + Number(r.valor_liquido ?? 0);
 
