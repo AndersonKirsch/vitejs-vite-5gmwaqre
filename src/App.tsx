@@ -339,7 +339,7 @@ function Dashboard({ t, imoveis }) {
               const proxAno = ultMes === 12 ? ultAno + 1 : ultAno;
                 const proxMes = ultMes === 12 ? 1 : ultMes + 1;
                   const periodoFimExcl = `${proxAno}-${String(proxMes).padStart(2, '0')}-01`;
-  const ultimosSeisMeses = MESES.slice(-6); const [mesSel, setMesSel] = useState(''); const mSelFim = mesSel ? (Number(mesSel.slice(5,7)) === 12 ? (Number(mesSel.slice(0,4))+1) + '-01-01' : mesSel.slice(0,4) + '-' + String(Number(mesSel.slice(5,7))+1).padStart(2, '0') + '-01') : ''; const pIni = mesSel ? mesSel + '-01' : periodoInicio; const pFim = mesSel ? mSelFim : periodoFimExcl;
+  const ultimosSeisMeses = MESES; const [mesSel, setMesSel] = useState(''); const mSelFim = mesSel ? (Number(mesSel.slice(5,7)) === 12 ? (Number(mesSel.slice(0,4))+1) + '-01-01' : mesSel.slice(0,4) + '-' + String(Number(mesSel.slice(5,7))+1).padStart(2, '0') + '-01') : ''; const pIni = mesSel ? mesSel + '-01' : periodoInicio; const pFim = mesSel ? mSelFim : periodoFimExcl;
 
     const { data: resumo } = useDashboardResumo(unidadesPorImovel, pIni, pFim);
   const { data: tendencia = [] } = useTendenciaMensal(
@@ -383,7 +383,7 @@ function Dashboard({ t, imoveis }) {
   // partir de `reservas` (check_in/check_out) quando for construir a tela de indicadores.
   const ocupacaoPorImovel = imoveis.map((b) => ({
     nome: b.nome.split(' ').slice(-1)[0],
-    ocupacao: 0,
+    ocupacao: Number((b.unidades && b.unidades[0] && b.unidades[0].ocupacao) || 0),
   }));
 
   return (
@@ -2155,12 +2155,7 @@ function ChannelManager({ t, imoveis }) {
           label="Erros pendentes"
           value={`${erros}`}
           deltaGood={erros === 0}
-          delta={erros === 0 ? 'tudo certo' : 'verificar log'}
-        />
-        <KpiCard
-          t={t}
-          icon={RefreshCw}
-          label="Método de sincronização"
+          
           value="iCal automático"
           mono={false}
         />
