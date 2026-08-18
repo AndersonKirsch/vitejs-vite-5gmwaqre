@@ -169,7 +169,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
   const d = dados || {};
   const meses = d.meses || [];
   const flats = d.flats || [];
-  const origens = d.origens || [];
+  const origens = (d.origens || []).filter((o) => Number(o.valor || 0) > 0);
   const k = d.kpis || {};
 
   const totalReceita = (d.totais && d.totais.receita != null) ? d.totais.receita : meses.reduce((a, m) => a + m.receita, 0);
