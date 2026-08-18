@@ -368,6 +368,13 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
     ? ((lucroOperacional / investimentoTotal) * 100).toFixed(2)
     : '0.00';
   const roiAnual = (roiMensal * 12).toFixed(1);
+  const totalUnidadesAtivas = imoveis.reduce(
+    (s, b) => s + b.unidades.filter((u) => u.situacao === 'Ativo').length,
+    0
+  );
+  const totalNoites = imoveis.reduce((acc: any, b: any) => acc + Number(b.noites ?? 0), 0); const ticketMedio = totalNoites > 0 ? Math.round(receitaBruta / totalNoites) : 0;
+  // TODO: calcular a partir de reservas (noites ocupadas / dias do mês / unidades ativas).
+  const ocupacaoMedia = imoveis.length ? Math.round(imoveis.reduce((acc: any, b: any) => acc + Number(b.unidades?.[0]?.ocupacao ?? 0), 0) / imoveis.length) : 0;
   const dadosRelatorio = {
     imovel: 'LocaCustoPro',
     titulo: 'Relatorio de Desempenho',
@@ -395,13 +402,6 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
     flats: imoveis.flatMap((b: any) => (b.unidades || []).map((u: any) => ({ nome: u.numero, situacao: u.situacao, receita: Number(u.receitaMes || 0) }))).sort((a: any, b: any) => b.receita - a.receita),
     origens: (origemReservas || []).map((o: any) => ({ nome: o.nome, valor: Number(o.valor || 0) })),
   };
-  const totalUnidadesAtivas = imoveis.reduce(
-    (s, b) => s + b.unidades.filter((u) => u.situacao === 'Ativo').length,
-    0
-  );
-  const totalNoites = imoveis.reduce((acc: any, b: any) => acc + Number(b.noites ?? 0), 0); const ticketMedio = totalNoites > 0 ? Math.round(receitaBruta / totalNoites) : 0;
-  // TODO: calcular a partir de reservas (noites ocupadas / dias do mês / unidades ativas).
-  const ocupacaoMedia = imoveis.length ? Math.round(imoveis.reduce((acc: any, b: any) => acc + Number(b.unidades?.[0]?.ocupacao ?? 0), 0) / imoveis.length) : 0;
 
   const porImovel = imoveis.flatMap((b) => (b.unidades || []).map((u) => { const nUn = Math.max(1, (b.unidades || []).length); const rec = Number(u.receitaMes || 0); return { nome: u.numero, receita: Math.round(rec), lucro: Math.round(rec * 0.91 - (Number(resumo?.despesasFixas || 0) / nUn)) }; })).sort((a, b) => b.receita - a.receita);
   // Ocupação por imóvel ainda depende de "diárias ocupadas / dias do mês" — calcule a
