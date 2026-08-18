@@ -40,7 +40,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
           .lte("competencia", `${mesFim}-31`),
         supabase
           .from("despesas_gerais")
-          .select("id, imovel_id, competencia, categoria, descricao, valor")
+          .select("id, imovel_id, competencia, categoria, descricao, valor, investimento")
           .eq("imovel_id", imovelId)
           .gte("competencia", `${mesInicio}-01`)
           .lte("competencia", `${mesFim}-31`),
@@ -96,7 +96,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
         descricao: d.descricao,
         hospede: null,
         unidade: numeroPorUnidade[d.unidade_id] ?? null,
-        valor: Number(d.valor),
+        valor: Number(d.valor), investimento: (d as any).investimento === true,
         status: "Pago",
       }));
 
@@ -109,7 +109,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
         descricao: d.descricao,
         hospede: null,
         unidade: null,
-        valor: Number(d.valor),
+        valor: Number(d.valor), investimento: (d as any).investimento === true,
         status: "Pago",
       }));
 
