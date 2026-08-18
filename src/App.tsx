@@ -447,7 +447,7 @@ function Dashboard({ t, imoveis }) {
           icon={CalendarDays}
           label="Ticket Médio / Diária"
           value={money(ticketMedio)}
-        /><KpiCard t={t} icon={TrendingUp} label={String.fromCharCode(77,101,100,105,97,32)+String.fromCharCode(98,114,117,116,97)} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={String.fromCharCode(77,101,100,105,97,32,108,105,113,117,105,100,97)} value={money(mediaLiquidaMes)} />
+        /><KpiCard t={t} icon={TrendingUp} label={"Média bruta / mês"} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={"Média líquida / mês"} value={money(mediaLiquidaMes)} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -577,7 +577,7 @@ function Dashboard({ t, imoveis }) {
             className="text-sm font-semibold mb-4"
             style={{ color: t.text, fontFamily: FONT_DISPLAY }}
           >
-            Lucro (últimos 7 meses)
+            Lucro por mês
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={tendencia}>
