@@ -95,7 +95,7 @@ export function useDashboardResumo(
         totais.lucro += p.lucro;
       }
 
-      return { porImovel, totais, periodo };
+      const ms=new Set(); (reservasRes.data??[]).forEach((r)=>ms.add(String(r.check_in).slice(0,7))); (receitasManuaisRes.data??[]).forEach((r)=>ms.add(String(r.competencia).slice(0,7))); return { porImovel, totais, periodo, mesesComReceita: ms.size };
     },
   });
 }

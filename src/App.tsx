@@ -165,7 +165,7 @@ function computeBuilding(b) {
       const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
           const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
-            const receitaLiquida = receitaBruta * 0.91;
+            const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
               const despesasEspecificasTotal = b.unidades.reduce((s, u) => s + Number(u.despesasEspecificas ?? 0), 0);
                 const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
                   const lucro = receitaLiquida - despesasTotais;
@@ -447,7 +447,7 @@ function Dashboard({ t, imoveis }) {
           icon={CalendarDays}
           label="Ticket Médio / Diária"
           value={money(ticketMedio)}
-        />
+        /><KpiCard t={t} icon={TrendingUp} label={String.fromCharCode(77,101,100,105,97,32)+String.fromCharCode(98,114,117,116,97)} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={String.fromCharCode(77,101,100,105,97,32,108,105,113,117,105,100,97)} value={money(mediaLiquidaMes)} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
