@@ -2787,8 +2787,8 @@ function Relatorios({ t, imoveis }) {
   };
 
   const exportarReceitas = () => baixarCsv(
-    receitas.map((r) => [r.data ?? "", r.unidade ?? "", r.categoria, (r.hospede ?? "").replace(/;/g, ","), r.valor.toFixed(2), r.status]),
-    ["Data", "Unidade", "Origem", "Hóspede", "Valor", "Status"],
+    receitas.map((r) => [r.data ?? "", r.unidade ?? "", r.categoria, (r.hospede ?? "").replace(/;/g, ","), (r as any).bruto?.toFixed(2), (r as any).taxa?.toFixed(2), r.valor.toFixed(2), r.status]),
+    ["Data", "Unidade", "Origem", "Hóspede", "Valor bruto", "Taxa", "Valor líquido", "Status"],
     `receitas_${MESES[deIdx].key}_a_${MESES[ateIdx].key}.csv`
   );
 

@@ -22,13 +22,13 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
       const [reservasRes, receitasManuaisRes, despEspecificasRes, despGeraisRes, unidadesRes] = await Promise.all([
         supabase
           .from("reservas")
-          .select("id, unidade_id, check_in, check_out, valor_liquido, origem, hospede_nome, status")
+          .select("id, unidade_id, check_in, check_out, valor_liquido, valor_bruto, taxa_plataforma, origem, hospede_nome, status")
           .in("unidade_id", unidadeIds)
           .gte("check_in", `${mesInicio}-01`)
           .lte("check_in", `${mesFim}-31`),
         supabase
           .from("receitas_manuais")
-          .select("id, unidade_id, categoria, descricao, valor_liquido, competencia, status")
+          .select("id, unidade_id, categoria, descricao, valor_liquido, valor_bruto, competencia, status")
           .in("unidade_id", unidadeIds)
           .gte("competencia", `${mesInicio}-01`)
           .lte("competencia", `${mesFim}-31`),
@@ -70,7 +70,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
           descricao: null,
           hospede: r.hospede_nome,
           unidade: numeroPorUnidade[r.unidade_id] ?? null,
-          valor: Number(r.valor_liquido ?? 0),
+          valor: Number(r.valor_liquido ?? 0), bruto: Number(r.valor_bruto ?? r.valor_liquido ?? 0), taxa: Number((r as any).taxa_plataforma ?? 0),
           status: r.status ?? "Confirmado",
         }));
 
@@ -83,7 +83,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
         descricao: r.descricao,
         hospede: null,
         unidade: numeroPorUnidade[r.unidade_id] ?? null,
-        valor: Number(r.valor_liquido ?? 0),
+        valor: Number(r.valor_liquido ?? 0), bruto: Number(r.valor_bruto ?? r.valor_liquido ?? 0), taxa: Number((r as any).taxa_plataforma ?? 0),
         status: r.status ?? "Confirmado",
       }));
 
