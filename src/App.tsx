@@ -9,6 +9,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  LabelList,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -494,14 +495,14 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
                 fill={t.primary}
                 radius={[6, 6, 0, 0]}
                 barSize={20}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
               <Bar
                 dataKey="despesa"
                 name="Despesa"
                 fill={t.negative}
                 radius={[6, 6, 0, 0]}
                 barSize={20}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -605,13 +606,13 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
                 }}
                 formatter={(v) => money(v)}
               />
-              <Area label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }}
+              <Area 
                 type="monotone"
                 dataKey="lucro"
                 stroke={t.gold}
                 fill="url(#lucroFill)"
                 strokeWidth={2.5}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Area>
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -656,14 +657,14 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
                 fill={t.primary}
                 radius={[6, 6, 0, 0]}
                 barSize={16}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
               <Bar
                 dataKey="lucro"
                 name="Lucro"
                 fill={t.positive}
                 radius={[6, 6, 0, 0]}
                 barSize={16}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -713,7 +714,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
                 fill={t.gold}
                 radius={[0, 6, 6, 0]}
                 barSize={12}
-              />
+              ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -1430,14 +1431,14 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
               fill={t.primary}
               radius={[6, 6, 0, 0]}
               barSize={20}
-            />
+            ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
             <Bar
               dataKey="despesasTotais"
               name="Despesas"
               fill={t.negative}
               radius={[6, 6, 0, 0]}
               barSize={20}
-            />
+            ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
           </ComposedChart>
         </ResponsiveContainer>
 
@@ -2613,8 +2614,8 @@ function Financeiro({ t, imoveis }) {
             <YAxis stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
             <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
             <Legend wrapperStyle={{ fontSize: 12, fontFamily: FONT_BODY }} />
-            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="entradas" name="Entradas" fill={t.positive} radius={[6, 6, 0, 0]} barSize={16} />
-            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="saidas" name="Saídas" fill={t.negative} radius={[6, 6, 0, 0]} barSize={16} />
+            <Bar  dataKey="entradas" name="Entradas" fill={t.positive} radius={[6, 6, 0, 0]} barSize={16} ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
+            <Bar  dataKey="saidas" name="Saídas" fill={t.negative} radius={[6, 6, 0, 0]} barSize={16} ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -2708,7 +2709,7 @@ function Despesas({ t, imoveis }) {
             <XAxis type="number" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
             <YAxis type="category" dataKey="categoria" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} width={110} />
             <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
-            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="valor" fill={t.negative} radius={[0, 6, 6, 0]} barSize={14} />
+            <Bar  dataKey="valor" fill={t.negative} radius={[0, 6, 6, 0]} barSize={14} ><LabelList position={'top'} fontSize={9} fill={t.textMuted} formatter={(v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v))} /></Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
