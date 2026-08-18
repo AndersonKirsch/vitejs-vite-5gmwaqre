@@ -452,7 +452,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
             Receita x Despesas por mês
           </h3>
           <ResponsiveContainer width="100%" height={240}>
-            <ComposedChart data={tendencia}>
+            <ComposedChart margin={{ top: 20, right: 8, left: 0, bottom: 0 }} data={tendencia}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={t.border}
@@ -570,7 +570,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
             Lucro por mês
           </h3>
           <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={tendencia}>
+            <AreaChart margin={{ top: 20, right: 8, left: 0, bottom: 0 }} data={tendencia}>
               <defs>
                 <linearGradient id="lucroFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={t.gold} stopOpacity={0.35} />
@@ -621,7 +621,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
             Receita e lucro por flat
           </h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={porImovel}>
+            <BarChart margin={{ top: 20, right: 8, left: 0, bottom: 0 }} data={porImovel}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={t.border}
@@ -1368,7 +1368,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
         </div>
 
         <ResponsiveContainer width="100%" height={220}>
-          <ComposedChart data={periodo}>
+          <ComposedChart margin={{ top: 20, right: 8, left: 0, bottom: 0 }} data={periodo}>
             <CartesianGrid
               strokeDasharray="3 3"
               stroke={t.border}
@@ -2581,7 +2581,7 @@ function Financeiro({ t, imoveis }) {
       <div className="rounded-2xl p-5" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
         <h3 className="text-sm font-semibold mb-4" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Fluxo de caixa</h3>
         <ResponsiveContainer width="100%" height={220}>
-          <ComposedChart data={serieFluxo}>
+          <ComposedChart margin={{ top: 20, right: 8, left: 0, bottom: 0 }} data={serieFluxo}>
             <CartesianGrid strokeDasharray="3 3" stroke={t.border} vertical={false} />
             <XAxis dataKey="label" stroke={t.textMuted} fontSize={12} tickLine={false} axisLine={false} />
             <YAxis stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
