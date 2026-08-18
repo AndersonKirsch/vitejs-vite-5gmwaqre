@@ -170,7 +170,7 @@ function computeBuilding(b) {
                 const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
                   const lucro = receitaLiquida - despesasTotais;
                     const investimentoTotal = b.unidades.reduce((s, u) => s + Number(u.valorAquisicao ?? 0) + Number(u.valorReforma ?? 0) + Number(u.valorMoveis ?? 0), 0);
-                      const roiMensal = investimentoTotal > 0 ? (lucro / investimentoTotal) * 100 : 0;
+                      const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0); const roiMensal = investimentoTotal > 0 ? (lucro / investimentoTotal) * 100 : 0;
                         const ocupacaoMedia = ativas.length ? Math.round(ativas.reduce((s, u) => s + Number(u.ocupacao ?? 0), 0) / ativas.length) : 0;
                           return { ativas, rateio, despesasGeraisTotal, receitaBruta, receitaLiquida, despesasEspecificasTotal, despesasTotais, lucro, investimentoTotal, roiMensal, ocupacaoMedia };
                           }
@@ -363,7 +363,7 @@ function Dashboard({ t, imoveis }) {
     0
   );
   const roiMensal = investimentoTotal
-    ? ((lucro / investimentoTotal) * 100).toFixed(2)
+    ? ((lucroOperacional / investimentoTotal) * 100).toFixed(2)
     : '0.00';
   const roiAnual = (roiMensal * 12).toFixed(1);
   const totalUnidadesAtivas = imoveis.reduce(
