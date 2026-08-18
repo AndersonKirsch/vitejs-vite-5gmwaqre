@@ -6,3 +6,5 @@
   body { background: #fff !important; }
   .bloco-impressao { break-inside: avoid; }
 }
+
+.bloco-impressao { grid-column: 1 / -1; width: 100%; }
