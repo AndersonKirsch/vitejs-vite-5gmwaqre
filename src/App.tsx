@@ -396,14 +396,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
           
           deltaGood
         />
-        <KpiCard
-          t={t}
-          icon={Wallet}
-          label="Receita Líquida"
-          value={money(receitaLiquida)}
-          
-          deltaGood
-        />
+        <KpiCard t={t} icon={Receipt} label={"Taxas de plataforma"} value={money(resumo?.taxas || 0)} />
         <KpiCard
           t={t}
           icon={Receipt}

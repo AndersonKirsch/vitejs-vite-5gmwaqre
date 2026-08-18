@@ -41,10 +41,10 @@ export function useDashboardResumo(
     queryKey: ['dashboard-resumo', todasUnidadeIds, inicio, fimExclusivo],
     enabled: todasUnidadeIds.length > 0,
     queryFn: async (): Promise<ResumoDashboard> => {
-      const reservasRes = await supabase.from('reservas').select('unidade_id, check_in, valor_liquido').in('unidade_id', todasUnidadeIds).neq('status', 'Cancelado').gte('check_in', inicio).lt('check_in', fimExclusivo);
+      const reservasRes = await supabase.from('reservas').select('unidade_id, check_in, valor_liquido, valor_bruto').in('unidade_id', todasUnidadeIds).neq('status', 'Cancelado').gte('check_in', inicio).lt('check_in', fimExclusivo);
       if (reservasRes.error) throw reservasRes.error;
 
-      const receitasManuaisRes = await supabase.from('receitas_manuais').select('unidade_id, competencia, valor_liquido').in('unidade_id', todasUnidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
+      const receitasManuaisRes = await supabase.from('receitas_manuais').select('unidade_id, competencia, valor_liquido, valor_bruto').in('unidade_id', todasUnidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
       if (receitasManuaisRes.error) throw receitasManuaisRes.error;
 
       const despEspecificasRes = await supabase.from('despesas_especificas').select('unidade_id, competencia, valor').in('unidade_id', todasUnidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
@@ -95,7 +95,7 @@ export function useDashboardResumo(
         totais.lucro += p.lucro;
       }
 
-      const INV=[String.fromCharCode(77,111,98,237,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,243,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,231,227,111),String.fromCharCode(77,97,110,117,116,101,110,231,227,111)]; let investimentos=0, despesasFixas=0; (despGeraisRes.data??[]).forEach((d)=>{const v=Number(d.valor||0); if(d.investimento === true) investimentos+=v; else despesasFixas+=v;}); const ms=new Set(); (reservasRes.data??[]).forEach((r)=>ms.add(String(r.check_in).slice(0,7))); (receitasManuaisRes.data??[]).forEach((r)=>ms.add(String(r.competencia).slice(0,7))); const porUnidade = {}; (reservasRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); (receitasManuaisRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); return { porImovel, porUnidade, totais, periodo, mesesComReceita: ms.size, investimentos, despesasFixas };
+      const INV=[String.fromCharCode(77,111,98,237,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,243,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,231,227,111),String.fromCharCode(77,97,110,117,116,101,110,231,227,111)]; let investimentos=0, despesasFixas=0; (despGeraisRes.data??[]).forEach((d)=>{const v=Number(d.valor||0); if(d.investimento === true) investimentos+=v; else despesasFixas+=v;}); let taxas=0; (reservasRes.data??[]).forEach((r)=>{taxas += Number(r.valor_bruto||0) - Number(r.valor_liquido||0);}); (receitasManuaisRes.data??[]).forEach((r)=>{taxas += Number(r.valor_bruto||0) - Number(r.valor_liquido||0);}); despesasFixas += taxas; const ms=new Set(); (reservasRes.data??[]).forEach((r)=>ms.add(String(r.check_in).slice(0,7))); (receitasManuaisRes.data??[]).forEach((r)=>ms.add(String(r.competencia).slice(0,7))); const porUnidade = {}; (reservasRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); (receitasManuaisRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); return { porImovel, porUnidade, totais, periodo, mesesComReceita: ms.size, investimentos, despesasFixas, taxas };
     },
   });
 }
