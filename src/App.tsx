@@ -438,7 +438,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
           label="Ticket Médio / Diária"
           value={money(ticketMedio)}
         /><KpiCard t={t} icon={TrendingUp} label={"Média bruta / mês"} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={"Média líquida / mês"} value={money(mediaLiquidaMes)} /><KpiCard t={t} icon={Wallet} label={String.fromCharCode(68,101,115,112,101,115,97,115,32,102,105,120,97,115)} value={money(resumo?.despesasFixas || 0)} /><KpiCard t={t} icon={Building2} label={String.fromCharCode(73,110,118,101,115,116,105,109,101,110,116,111,115)} value={money(resumo?.investimentos || 0)} /><div className={'rounded-2xl p-5 mt-4'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}>
-      </div><div className={'grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 bloco-impressao'}><div className={'text-[15px] font-semibold mb-3'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Receita e despesas mês a mês</div><table className={'w-full text-[13px]'}><thead><tr style={{ borderBottom: 1 + 'px solid ' + t.border }}><th className={'py-2 text-left font-medium'} style={{ color: t.textMuted }}>Mês</th><th className={'py-2 text-right font-medium'} style={{ color: t.textMuted }}>Receita</th><th className={'py-2 text-right font-medium'} style={{ color: t.textMuted }}>Despesas</th><th className={'py-2 text-right font-medium'} style={{ color: t.textMuted }}>Lucro</th></tr></thead><tbody>{(tendencia || []).map((m, i) => { const rc = Number(m.receita || 0); const dp = Number(m.despesa || 0); return (<tr key={i} style={{ borderBottom: 1 + 'px solid ' + t.border }}><td className={'py-1.5'} style={{ color: t.text }}>{m.label || m.mes}</td><td className={'py-1.5 text-right'} style={{ color: t.text }}>{money(rc)}</td><td className={'py-1.5 text-right'} style={{ color: t.negative }}>{money(dp)}</td><td className={'py-1.5 text-right font-semibold'} style={{ color: rc - dp >= 0 ? t.positive : t.negative }}>{money(rc - dp)}</td></tr>); })}</tbody></table></div><div className={'rounded-2xl p-5 mt-4'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold mb-3'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Unidades (flats)</div><table className={'w-full text-[13px]'}><thead><tr style={{ borderBottom: 1 + 'px solid ' + t.border }}><th className={'py-2 text-left font-medium'} style={{ color: t.textMuted }}>Flat</th><th className={'py-2 text-left font-medium'} style={{ color: t.textMuted }}>Situação</th><th className={'py-2 text-right font-medium'} style={{ color: t.textMuted }}>Receita</th><th className={'py-2 text-right font-medium'} style={{ color: t.textMuted }}>% da receita</th></tr></thead><tbody>{imoveis.flatMap((b) => (b.unidades || []).map((u) => ({ n: u.numero, sit: u.situacao, rec: Number(u.receitaMes || 0), oc: Number(u.ocupacao || 0) }))).sort((x, y) => y.rec - x.rec).map((u, i) => (<tr key={i} style={{ borderBottom: 1 + 'px solid ' + t.border }}><td className={'py-1.5'} style={{ color: t.text }}>{u.n}</td><td className={'py-1.5'} style={{ color: t.textMuted }}>{u.sit}</td><td className={'py-1.5 text-right font-semibold'} style={{ color: t.text }}>{money(u.rec)}</td><td className={'py-1.5 text-right'} style={{ color: t.textMuted }}>{(() => { const tot = imoveis.flatMap((z) => (z.unidades || [])).reduce((acc, z) => acc + Number(z.receitaMes || 0), 0); return tot > 0 ? ((u.rec / tot) * 100).toFixed(1) : 0; })()}%</td></tr>))}</tbody></table></div></div>
+      </div><div className={'flex flex-col gap-4 mt-4 bloco-impressao'}><div className={'text-[15px] font-semibold mb-3'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Receita e despesas mês a mês</div><table className={'w-full text-sm'}><thead><tr style={{ borderBottom: 1 + 'px solid ' + t.border }}><th className={'py-2.5 text-left font-medium'} style={{ color: t.textMuted }}>Mês</th><th className={'py-2.5 text-right font-medium'} style={{ color: t.textMuted }}>Receita</th><th className={'py-2.5 text-right font-medium'} style={{ color: t.textMuted }}>Despesas</th><th className={'py-2.5 text-right font-medium'} style={{ color: t.textMuted }}>Lucro</th></tr></thead><tbody>{(tendencia || []).map((m, i) => { const rc = Number(m.receita || 0); const dp = Number(m.despesa || 0); return (<tr key={i} style={{ borderBottom: 1 + 'px solid ' + t.border }}><td className={'py-2.5'} style={{ color: t.text }}>{m.label || m.mes}</td><td className={'py-2.5 text-right'} style={{ color: t.text }}>{money(rc)}</td><td className={'py-2.5 text-right'} style={{ color: t.negative }}>{money(dp)}</td><td className={'py-2.5 text-right font-semibold'} style={{ color: rc - dp >= 0 ? t.positive : t.negative }}>{money(rc - dp)}</td></tr>); })}<tr style={{ borderTop: 2 + 'px solid ' + t.border }}><td className={'py-2.5  font-semibold'} style={{ color: t.text }}>Total</td><td className={'py-2.5 text-right font-semibold'} style={{ color: t.text }}>{money((tendencia || []).reduce((a2, m) => a2 + Number(m.receita || 0), 0))}</td><td className={'py-2.5 text-right font-semibold'} style={{ color: t.negative }}>{money((tendencia || []).reduce((a2, m) => a2 + Number(m.despesa || 0), 0))}</td><td className={'py-2.5 text-right font-semibold'} style={{ color: t.positive }}>{money((tendencia || []).reduce((a2, m) => a2 + Number(m.receita || 0) - Number(m.despesa || 0), 0))}</td></tr></tbody></table></div><div className={'rounded-2xl p-5 mt-4'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold mb-3'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Unidades (flats)</div><table className={'w-full text-sm'}><thead><tr style={{ borderBottom: 1 + 'px solid ' + t.border }}><th className={'py-2.5 text-left font-medium'} style={{ color: t.textMuted }}>Flat</th><th className={'py-2.5 text-left font-medium'} style={{ color: t.textMuted }}>Situação</th><th className={'py-2.5 text-right font-medium'} style={{ color: t.textMuted }}>Receita</th><th className={'py-2.5 text-right font-medium'} style={{ color: t.textMuted }}>% da receita</th></tr></thead><tbody>{imoveis.flatMap((b) => (b.unidades || []).map((u) => ({ n: u.numero, sit: u.situacao, rec: Number(u.receitaMes || 0), oc: Number(u.ocupacao || 0) }))).sort((x, y) => y.rec - x.rec).map((u, i) => (<tr key={i} style={{ borderBottom: 1 + 'px solid ' + t.border }}><td className={'py-2.5'} style={{ color: t.text }}>{u.n}</td><td className={'py-2.5'} style={{ color: t.textMuted }}>{u.sit}</td><td className={'py-2.5 text-right font-semibold'} style={{ color: t.text }}>{money(u.rec)}</td><td className={'py-2.5 text-right'} style={{ color: t.textMuted }}>{(() => { const tot = imoveis.flatMap((z) => (z.unidades || [])).reduce((acc, z) => acc + Number(z.receitaMes || 0), 0); return tot > 0 ? ((u.rec / tot) * 100).toFixed(1) : 0; })()}%</td></tr>))}</tbody></table></div></div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div
@@ -1202,11 +1202,11 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
     <div className="flex flex-col gap-5">
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-[13px] font-medium w-fit"
+        className="flex items-center gap-1.5 text-sm font-medium w-fit"
         style={{ color: t.textMuted, fontFamily: FONT_BODY }}
       >
         <ArrowLeft size={15} /> Voltar para imóveis
-      </button> <button onClick={() => { setEd({ nome: building.nome, codigo: building.codigo, endereco: building.endereco || String(), cidade: building.cidade || String(), situacao: building.situacao, foto: building.foto || String(), valorAquisicao: building.valorAquisicao || 0, valorReforma: building.valorReforma || 0, valorMoveis: building.valorMoveis || 0 }); setEditando(true); }} className={'text-[12px] rounded-lg px-3 py-2 ml-3'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY, alignSelf: 'flex-start', width: 'fit-content' }}>Editar imóvel</button> {editando && (<div className={'rounded-2xl p-5 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Editar imóvel</div><div className={'text-[12px]'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Dados cadastrais e investimento total do prédio</div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Identificação</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Nome do imóvel</label><input type={'text'} value={ed.nome} onChange={(e) => setEd({ ...ed, nome: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Código</label><input type={'text'} value={ed.codigo} onChange={(e) => setEd({ ...ed, codigo: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Localização</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Endereço</label><input type={'text'} value={ed.endereco} onChange={(e) => setEd({ ...ed, endereco: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Cidade</label><input type={'text'} value={ed.cidade} onChange={(e) => setEd({ ...ed, cidade: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Situação e foto</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Situação</label><select value={ed.situacao} onChange={(e) => setEd({ ...ed, situacao: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }}><option value={'Ativo'}>Ativo</option><option value={'Inativo'}>Inativo</option></select></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Foto do imóvel</label><input type={'file'} accept={'image/*'} onChange={async (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; try { const url = await uploadFotoImovel(building.id, f); setEd({ ...ed, foto: url }); } catch (err) { alert('Falha ao enviar a foto'); } }} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Investimento total do prédio</div><div className={'grid grid-cols-1 sm:grid-cols-3 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Aquisição (R$)</label><input type={'number'} value={ed.valorAquisicao} onChange={(e) => setEd({ ...ed, valorAquisicao: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Reforma (R$)</label><input type={'number'} value={ed.valorReforma} onChange={(e) => setEd({ ...ed, valorReforma: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Móveis (R$)</label><input type={'number'} value={ed.valorMoveis} onChange={(e) => setEd({ ...ed, valorMoveis: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] mt-2'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Rateado igualmente entre as unidades ativas para o cálculo de ROI.</div><div className={'flex gap-2 mt-5 pt-4'} style={{ borderTop: 1 + 'px solid ' + t.border }}><button onClick={() => { editarImovel.mutate({ id: building.id, ...ed }); setEditando(false); }} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.primary, color: t.surface, fontFamily: FONT_BODY }}>Salvar alterações</button><button onClick={() => setEditando(false)} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.bg, color: t.textMuted, border: 1 + 'px solid ' + t.border, fontFamily: FONT_BODY }}>Cancelar</button></div></div>)}
+      </button> <button onClick={() => { setEd({ nome: building.nome, codigo: building.codigo, endereco: building.endereco || String(), cidade: building.cidade || String(), situacao: building.situacao, foto: building.foto || String(), valorAquisicao: building.valorAquisicao || 0, valorReforma: building.valorReforma || 0, valorMoveis: building.valorMoveis || 0 }); setEditando(true); }} className={'text-[12px] rounded-lg px-3 py-2 ml-3'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY, alignSelf: 'flex-start', width: 'fit-content' }}>Editar imóvel</button> {editando && (<div className={'rounded-2xl p-5 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Editar imóvel</div><div className={'text-[12px]'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Dados cadastrais e investimento total do prédio</div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Identificação</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Nome do imóvel</label><input type={'text'} value={ed.nome} onChange={(e) => setEd({ ...ed, nome: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Código</label><input type={'text'} value={ed.codigo} onChange={(e) => setEd({ ...ed, codigo: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Localização</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Endereço</label><input type={'text'} value={ed.endereco} onChange={(e) => setEd({ ...ed, endereco: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Cidade</label><input type={'text'} value={ed.cidade} onChange={(e) => setEd({ ...ed, cidade: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Situação e foto</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Situação</label><select value={ed.situacao} onChange={(e) => setEd({ ...ed, situacao: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }}><option value={'Ativo'}>Ativo</option><option value={'Inativo'}>Inativo</option></select></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Foto do imóvel</label><input type={'file'} accept={'image/*'} onChange={async (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; try { const url = await uploadFotoImovel(building.id, f); setEd({ ...ed, foto: url }); } catch (err) { alert('Falha ao enviar a foto'); } }} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] uppercase mb-2 mt-5'} style={{ color: t.textMuted, letterSpacing: 1, fontFamily: FONT_BODY }}>Investimento total do prédio</div><div className={'grid grid-cols-1 sm:grid-cols-3 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Aquisição (R$)</label><input type={'number'} value={ed.valorAquisicao} onChange={(e) => setEd({ ...ed, valorAquisicao: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Reforma (R$)</label><input type={'number'} value={ed.valorReforma} onChange={(e) => setEd({ ...ed, valorReforma: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Móveis (R$)</label><input type={'number'} value={ed.valorMoveis} onChange={(e) => setEd({ ...ed, valorMoveis: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div></div><div className={'text-[11px] mt-2'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Rateado igualmente entre as unidades ativas para o cálculo de ROI.</div><div className={'flex gap-2 mt-5 pt-4'} style={{ borderTop: 1 + 'px solid ' + t.border }}><button onClick={() => { editarImovel.mutate({ id: building.id, ...ed }); setEditando(false); }} className={'text-sm rounded-lg px-4 py-2'} style={{ background: t.primary, color: t.surface, fontFamily: FONT_BODY }}>Salvar alterações</button><button onClick={() => setEditando(false)} className={'text-sm rounded-lg px-4 py-2'} style={{ background: t.bg, color: t.textMuted, border: 1 + 'px solid ' + t.border, fontFamily: FONT_BODY }}>Cancelar</button></div></div>)}
 
       <div
         className="rounded-2xl overflow-hidden flex flex-col sm:flex-row"
@@ -1303,7 +1303,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
                 setDeIdx(v);
                 if (v > ateIdx) setAteIdx(v);
               }}
-              className="rounded-lg px-2 py-1.5 text-[12px] outline-none"
+              className="rounded-lg px-2 py-2.5 text-[12px] outline-none"
               style={inputStyleFn(t)}
             >
               {MESES.map((m, i) => (
@@ -1320,7 +1320,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
                 setAteIdx(v);
                 if (v < deIdx) setDeIdx(v);
               }}
-              className="rounded-lg px-2 py-1.5 text-[12px] outline-none"
+              className="rounded-lg px-2 py-2.5 text-[12px] outline-none"
               style={inputStyleFn(t)}
             >
               {MESES.map((m, i) => (
@@ -1550,7 +1550,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
           </div>
           <button
             onClick={() => setShowDespesa(true)}
-            className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg"
+            className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-2.5 rounded-lg"
             style={{
               background: t.primarySoft,
               color: t.primary,
@@ -1558,7 +1558,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
             }}
           >
             <Plus size={14} /> Nova despesa geral
-          </button> <button onClick={() => setShowRec(true)} className={'text-[12px] rounded-lg px-3 py-2 ml-2'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY, alignSelf: 'flex-start', width: 'fit-content' }}>Nova receita</button> {showRec && (<div className={'rounded-2xl p-5 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Nova receita</div><div className={'text-[12px] mb-4'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Lance o valor recebido no mês para uma unidade</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Unidade</label><select value={rec.unidadeId} onChange={(e) => setRec({ ...rec, unidadeId: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }}><option value={''}>Selecione</option>{(building.unidades || []).map((u: any) => (<option key={u.id} value={u.id}>{u.numero}</option>))}</select></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Mês de referência</label><input type={'month'} value={rec.competencia} onChange={(e) => setRec({ ...rec, competencia: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Valor recebido (R$)</label><input type={'number'} value={rec.valor} onChange={(e) => setRec({ ...rec, valor: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Categoria</label><input type={'text'} value={rec.categoria} onChange={(e) => setRec({ ...rec, categoria: e.target.value })} list={'lista-cat-receita'} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /><datalist id={'lista-cat-receita'}><option value={'Locação direta'} /><option value={'Aluguel mensal'} /><option value={'Diárias'} /></datalist></div></div><div className={'flex gap-2 mt-5 pt-4'} style={{ borderTop: 1 + 'px solid ' + t.border }}><button onClick={() => { if (!rec.unidadeId || !rec.competencia || !rec.valor) { alert('Preencha unidade, mês e valor'); return; } addReceita.mutate({ unidadeId: rec.unidadeId, competencia: rec.competencia + '-01', valor: Number(rec.valor), categoria: rec.categoria, descricao: rec.categoria }); setShowRec(false); setRec({ unidadeId: '', competencia: '', valor: '', categoria: 'Aluguel mensal' }); }} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.primary, color: t.surface, fontFamily: FONT_BODY }}>Salvar receita</button><button onClick={() => setShowRec(false)} className={'text-[13px] rounded-lg px-4 py-2'} style={{ background: t.bg, color: t.textMuted, border: 1 + 'px solid ' + t.border, fontFamily: FONT_BODY }}>Cancelar</button></div></div>)}
+          </button> <button onClick={() => setShowRec(true)} className={'text-[12px] rounded-lg px-3 py-2 ml-2'} style={{ background: t.primarySoft, color: t.primary, fontFamily: FONT_BODY, alignSelf: 'flex-start', width: 'fit-content' }}>Nova receita</button> {showRec && (<div className={'rounded-2xl p-5 mt-3'} style={{ background: t.surface, border: 1 + 'px solid ' + t.border }}><div className={'text-[15px] font-semibold'} style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Nova receita</div><div className={'text-[12px] mb-4'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Lance o valor recebido no mês para uma unidade</div><div className={'grid grid-cols-1 sm:grid-cols-2 gap-4'}><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Unidade</label><select value={rec.unidadeId} onChange={(e) => setRec({ ...rec, unidadeId: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }}><option value={''}>Selecione</option>{(building.unidades || []).map((u: any) => (<option key={u.id} value={u.id}>{u.numero}</option>))}</select></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Mês de referência</label><input type={'month'} value={rec.competencia} onChange={(e) => setRec({ ...rec, competencia: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Valor recebido (R$)</label><input type={'number'} value={rec.valor} onChange={(e) => setRec({ ...rec, valor: e.target.value })} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /></div><div><label className={'block text-[11px] mb-1.5'} style={{ color: t.textMuted, fontFamily: FONT_BODY }}>Categoria</label><input type={'text'} value={rec.categoria} onChange={(e) => setRec({ ...rec, categoria: e.target.value })} list={'lista-cat-receita'} className={'w-full rounded-lg px-3 py-2 text-sm outline-none'} style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.text }} /><datalist id={'lista-cat-receita'}><option value={'Locação direta'} /><option value={'Aluguel mensal'} /><option value={'Diárias'} /></datalist></div></div><div className={'flex gap-2 mt-5 pt-4'} style={{ borderTop: 1 + 'px solid ' + t.border }}><button onClick={() => { if (!rec.unidadeId || !rec.competencia || !rec.valor) { alert('Preencha unidade, mês e valor'); return; } addReceita.mutate({ unidadeId: rec.unidadeId, competencia: rec.competencia + '-01', valor: Number(rec.valor), categoria: rec.categoria, descricao: rec.categoria }); setShowRec(false); setRec({ unidadeId: '', competencia: '', valor: '', categoria: 'Aluguel mensal' }); }} className={'text-sm rounded-lg px-4 py-2'} style={{ background: t.primary, color: t.surface, fontFamily: FONT_BODY }}>Salvar receita</button><button onClick={() => setShowRec(false)} className={'text-sm rounded-lg px-4 py-2'} style={{ background: t.bg, color: t.textMuted, border: 1 + 'px solid ' + t.border, fontFamily: FONT_BODY }}>Cancelar</button></div></div>)}
         </div>
         <div
           className="flex flex-col divide-y"
@@ -1567,7 +1567,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
           {building.despesasGerais.map((d) => (
             <div
               key={d.id}
-              className="flex items-center justify-between py-2 text-[13px]"
+              className="flex items-center justify-between py-2 text-sm"
               style={{ color: t.text, fontFamily: FONT_BODY }}
             >
               <div>
@@ -1615,7 +1615,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
           </h3>
           <button
             onClick={() => setShowUnidade(true)}
-            className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg"
+            className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-2.5 rounded-lg"
             style={{
               background: t.primary,
               color: '#fff',
@@ -1798,7 +1798,7 @@ function ImovelCard({ t, building, onOpen }) {
               Receita do período
             </div>
             <div
-              className="text-[13px] font-semibold"
+              className="text-sm font-semibold"
               style={{ color: t.text, fontFamily: FONT_MONO }}
             >
               {money(c.receitaBruta)}
@@ -1812,7 +1812,7 @@ function ImovelCard({ t, building, onOpen }) {
               Lucro do período
             </div>
             <div
-              className="text-[13px] font-semibold"
+              className="text-sm font-semibold"
               style={{
                 color: c.lucro >= 0 ? t.positive : t.negative,
                 fontFamily: FONT_MONO,
@@ -1829,7 +1829,7 @@ function ImovelCard({ t, building, onOpen }) {
               Ocupação média
             </div>
             <div
-              className="text-[13px] font-semibold"
+              className="text-sm font-semibold"
               style={{ color: t.text, fontFamily: FONT_MONO }}
             >
               {c.ocupacaoMedia}%
@@ -1843,7 +1843,7 @@ function ImovelCard({ t, building, onOpen }) {
               ROI do período
             </div>
             <div
-              className="text-[13px] font-semibold"
+              className="text-sm font-semibold"
               style={{ color: t.gold, fontFamily: FONT_MONO }}
             >
               {c.roiMensal.toFixed(2)}%
@@ -1903,7 +1903,7 @@ function Imoveis({ t, imoveis, empresaId }) {
             <button
               key={op}
               onClick={() => setFiltro(op)}
-              className="text-[12px] px-3 py-1.5 rounded-lg font-medium"
+              className="text-[12px] px-3 py-2.5 rounded-lg font-medium"
               style={{
                 fontFamily: FONT_BODY,
                 background: filtro === op ? t.primarySoft : 'transparent',
@@ -1992,7 +1992,7 @@ function IcalModal({
             style={{ borderBottom: `1px solid ${t.border}` }}
           >
             <span
-              className="text-[13px] font-semibold"
+              className="text-sm font-semibold"
               style={{ color: t.text, fontFamily: FONT_DISPLAY }}
             >
               {canal.plataforma}
@@ -2469,7 +2469,7 @@ function Calendar({ t, imoveis }) {
               style={{ borderTop: `1px solid ${t.border}` }}
             >
               <div
-                className="text-[12px] py-1.5 pr-2 truncate"
+                className="text-[12px] py-2.5 pr-2 truncate"
                 style={{ width: 170, color: t.text, fontFamily: FONT_BODY }}
               >
                 <span className="font-medium">{u.numero}</span>
@@ -2515,7 +2515,7 @@ function SeletorImovel({ t, imoveis, imovelId, setImovelId }) {
     <select
       value={imovelId}
       onChange={(e) => setImovelId(e.target.value)}
-      className="rounded-lg px-2 py-1.5 text-[12px] outline-none"
+      className="rounded-lg px-2 py-2.5 text-[12px] outline-none"
       style={inputStyleFn(t)}
     >
       {imoveis.map((im) => <option key={im.id} value={im.id}>{im.nome}</option>)}
@@ -2527,11 +2527,11 @@ function PeriodoSeletorReal({ t, deIdx, ateIdx, setDeIdx, setAteIdx }) {
   return (
     <div className="flex items-center gap-2 text-[12px]" style={{ fontFamily: FONT_BODY, color: t.textMuted }}>
       <span>De</span>
-      <select value={deIdx} onChange={(e) => { const v = Number(e.target.value); setDeIdx(v); if (v > ateIdx) setAteIdx(v); }} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+      <select value={deIdx} onChange={(e) => { const v = Number(e.target.value); setDeIdx(v); if (v > ateIdx) setAteIdx(v); }} className="rounded-lg px-2 py-2.5 text-[12px] outline-none" style={inputStyleFn(t)}>
         {MESES.map((m, i) => <option key={m.key} value={i}>{m.label}</option>)}
       </select>
       <span>até</span>
-      <select value={ateIdx} onChange={(e) => { const v = Number(e.target.value); setAteIdx(v); if (v < deIdx) setDeIdx(v); }} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+      <select value={ateIdx} onChange={(e) => { const v = Number(e.target.value); setAteIdx(v); if (v < deIdx) setDeIdx(v); }} className="rounded-lg px-2 py-2.5 text-[12px] outline-none" style={inputStyleFn(t)}>
         {MESES.map((m, i) => <option key={m.key} value={i}>{m.label}</option>)}
       </select>
     </div>
@@ -2618,13 +2618,13 @@ function Financeiro({ t, imoveis }) {
             <tbody>
               {filtrados.slice(0, 100).map((l) => (
                 <tr key={l.id} className="border-t" style={{ borderColor: t.border }}>
-                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO }}>{l.data ? new Date(l.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
-                  <td className="py-1.5 pr-3">{l.unidade ?? "Geral"}</td>
-                  <td className="py-1.5 pr-3">{l.categoria}</td>
-                  <td className="py-1.5 pr-3">{l.hospede ?? l.descricao ?? "—"}</td>
-                  <td className="py-1.5 pr-3"><Badge t={t} tone={l.tipo === "receita" ? "positive" : "negative"}>{l.tipo === "receita" ? "Receita" : "Despesa"}</Badge></td>
-                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO, color: l.tipo === "receita" ? t.positive : t.negative }}>{l.tipo === "receita" ? "+" : "−"}{money(l.valor)}</td>
-                  <td className="py-1.5 pr-3"><Badge t={t}>{l.status}</Badge></td>
+                  <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO }}>{l.data ? new Date(l.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+                  <td className="py-2.5 pr-3">{l.unidade ?? "Geral"}</td>
+                  <td className="py-2.5 pr-3">{l.categoria}</td>
+                  <td className="py-2.5 pr-3">{l.hospede ?? l.descricao ?? "—"}</td>
+                  <td className="py-2.5 pr-3"><Badge t={t} tone={l.tipo === "receita" ? "positive" : "negative"}>{l.tipo === "receita" ? "Receita" : "Despesa"}</Badge></td>
+                  <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO, color: l.tipo === "receita" ? t.positive : t.negative }}>{l.tipo === "receita" ? "+" : "−"}{money(l.valor)}</td>
+                  <td className="py-2.5 pr-3"><Badge t={t}>{l.status}</Badge></td>
                 </tr>
               ))}
             </tbody>
@@ -2690,7 +2690,7 @@ function Despesas({ t, imoveis }) {
       <div className="rounded-2xl p-5 overflow-x-auto" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Lançamentos de despesa</h3>
-          <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className="rounded-lg px-2 py-1.5 text-[12px] outline-none" style={inputStyleFn(t)}>
+          <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className="rounded-lg px-2 py-2.5 text-[12px] outline-none" style={inputStyleFn(t)}>
             {categorias.map((c) => <option key={c}>{c}</option>)}
           </select>
         </div>
@@ -2707,11 +2707,11 @@ function Despesas({ t, imoveis }) {
             <tbody>
               {filtradas.slice(0, 100).map((d) => (
                 <tr key={d.id} className="border-t" style={{ borderColor: t.border }}>
-                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO }}>{d.data ? new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
-                  <td className="py-1.5 pr-3">{d.unidade ?? <Badge t={t} tone="gold">Geral</Badge>}</td>
-                  <td className="py-1.5 pr-3">{d.categoria}</td>
-                  <td className="py-1.5 pr-3">{d.descricao ?? "—"}</td>
-                  <td className="py-1.5 pr-3" style={{ fontFamily: FONT_MONO, color: t.negative }}>{money(d.valor)}</td>
+                  <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO }}>{d.data ? new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+                  <td className="py-2.5 pr-3">{d.unidade ?? <Badge t={t} tone="gold">Geral</Badge>}</td>
+                  <td className="py-2.5 pr-3">{d.categoria}</td>
+                  <td className="py-2.5 pr-3">{d.descricao ?? "—"}</td>
+                  <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO, color: t.negative }}>{money(d.valor)}</td>
                 </tr>
               ))}
             </tbody>
@@ -2851,7 +2851,7 @@ export default function App() {
             onClick={() => {
               n.ativo && setView(n.id);
             }}
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-left"
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-left"
             style={{
               fontFamily: FONT_BODY,
               color: view === n.id ? t.primary : n.ativo ? t.text : t.textMuted,
