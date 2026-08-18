@@ -389,7 +389,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
       roiAnual: Number(roiAnual),
       roiPeriodo: Number(roiMensal),
       taxasPlataforma: Number((resumo && resumo.taxas) || 0),
-      despesas: despesasTotais,
+      despesas: despesas,
       despesasFixas: Number((resumo && resumo.despesasFixas) || 0),
       investimentos: Number((resumo && resumo.investimentos) || 0),
       ocupacaoMedia: ocupacaoMedia,
@@ -398,7 +398,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
       mediaLiquidaMes: mediaLiquidaMes,
     },
     meses: (tendencia || []).filter((m: any) => Number(m.receita || 0) > 0 || Number(m.despesa || 0) > 0).map((m: any) => ({ label: m.label || m.mes, receita: Number(m.receita || 0), despesa: Number(m.despesa || 0) })),
-    totais: { receita: receitaBruta, despesa: despesasTotais },
+    totais: { receita: receitaBruta, despesa: despesas },
     flats: imoveis.flatMap((b: any) => (b.unidades || []).map((u: any) => ({ nome: u.numero, situacao: u.situacao, receita: Number(u.receitaMes || 0) }))).sort((a: any, b: any) => b.receita - a.receita),
     origens: (origemReservas || []).map((o: any) => ({ nome: o.nome, valor: Number(o.valor || 0) })),
   };
