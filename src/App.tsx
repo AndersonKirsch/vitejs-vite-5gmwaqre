@@ -167,7 +167,7 @@ function computeBuilding(b) {
       const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
           const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
-            const receitaLiquida = receitaBruta * 0.91;
+            const receitaLiquida = receitaRecebida;
               const despesasEspecificasTotal = b.unidades.reduce((s, u) => s + Number(u.despesasEspecificas ?? 0), 0);
                 const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
                   const lucro = receitaLiquida - despesasTotais;
@@ -351,7 +351,7 @@ function Dashboard({ t, imoveis }) {
   const { data: origemReservas = [] } = useReceitaPorOrigem(todasUnidadeIds, pIni, pFim);
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
-  const receitaBruta = totais.receita;
+  const receitaBruta = Number((totais as any).receitaBruta || totais.receita); const receitaRecebida = totais.receita;
   const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const CAT_INV = [String.fromCharCode(77,111,98,105,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(77,97,110,117,116,101,110,99,97,111),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,111,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,99,97,111)]; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
   const despesas = totais.despesasTotais;
   const lucro = totais.lucro;

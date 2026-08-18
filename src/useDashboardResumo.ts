@@ -62,12 +62,12 @@ export function useDashboardResumo(
 
       for (const r of reservasRes.data ?? []) {
         const imovelId = unidadeParaImovel[r.unidade_id];
-        if (imovelId) porImovel[imovelId].receita += Number(r.valor_liquido ?? 0);
+        if (imovelId) porImovel[imovelId].receita += Number(r.valor_liquido ?? 0); if (imovelId) porImovel[imovelId].receitaBruta = Number(porImovel[imovelId].receitaBruta || 0) + Number(r.valor_bruto ?? r.valor_liquido ?? 0);
         if (r.check_in) datas.push(r.check_in);
       }
       for (const r of receitasManuaisRes.data ?? []) {
         const imovelId = unidadeParaImovel[r.unidade_id];
-        if (imovelId) porImovel[imovelId].receita += Number(r.valor_liquido ?? 0);
+        if (imovelId) porImovel[imovelId].receita += Number(r.valor_liquido ?? 0); if (imovelId) porImovel[imovelId].receitaBruta = Number(porImovel[imovelId].receitaBruta || 0) + Number(r.valor_bruto ?? r.valor_liquido ?? 0);
         if (r.competencia) datas.push(r.competencia);
       }
       for (const d of despEspecificasRes.data ?? []) {
@@ -87,8 +87,8 @@ export function useDashboardResumo(
       for (const imovelId of todosImovelIds) {
         const p = porImovel[imovelId];
         p.despesasTotais = p.despesasGerais + p.despesasEspecificas;
-        p.lucro = p.receita * 0.91 - p.despesasTotais;
-        totais.receita += p.receita;
+        p.lucro = p.receita - p.despesasTotais;
+        totais.receita += p.receita; totais.receitaBruta = Number(totais.receitaBruta || 0) + Number(p.receitaBruta || 0);
         totais.despesasGerais += p.despesasGerais;
         totais.despesasEspecificas += p.despesasEspecificas;
         totais.despesasTotais += p.despesasTotais;
@@ -129,14 +129,14 @@ export function useTendenciaMensal(
         await Promise.all([
           supabase
             .from('reservas')
-            .select('unidade_id, check_in, valor_liquido')
+            .select('unidade_id, check_in, valor_liquido, valor_bruto')
             .in('unidade_id', todasUnidadeIds)
             .neq('status', 'Cancelado')
             .gte('check_in', inicio)
             .lte('check_in', fim),
                   supabase
                           .from('receitas_manuais')
-                                  .select('unidade_id, competencia, valor_liquido')
+                                  .select('unidade_id, competencia, valor_liquido, valor_bruto')
                                           .in('unidade_id', todasUnidadeIds)
                                                   .gte('competencia', inicio)
                                                           .lte('competencia', fim),
