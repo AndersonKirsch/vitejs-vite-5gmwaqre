@@ -219,3 +219,14 @@ export function useAdicionarReceita() {
     onSuccess: () => { queryClient.invalidateQueries(); },
   });
 }
+
+export function useAlternarInvestimento() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (d: { id: string; investimento: boolean }) => {
+      const { error } = await supabase.from('despesas_gerais').update({ investimento: d.investimento }).eq('id', d.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries(); },
+  });
+}

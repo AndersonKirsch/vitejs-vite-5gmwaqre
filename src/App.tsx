@@ -50,7 +50,7 @@ import {
 } from 'lucide-react';
 import {
   useImoveis,
-  useAdicionarImovel, useEditarImovel, uploadFotoImovel, useAdicionarReceita,
+  useAdicionarImovel, useEditarImovel, uploadFotoImovel, useAdicionarReceita, useAlternarInvestimento,
   useAdicionarUnidade,
   useRemoverUnidade,
   useAdicionarDespesaGeral,
@@ -2677,6 +2677,7 @@ function Financeiro({ t, imoveis }) {
   );
 }
 function Despesas({ t, imoveis }) {
+  const alternarInv = useAlternarInvestimento();
   const [imovelId, setImovelId] = useState(imoveis[0]?.id ?? "");
   const imovel = imoveis.find((im) => im.id === imovelId) ?? imoveis[0];
   const unidadeIds = useMemo(() => (imovel?.unidades ?? []).map((u) => u.id), [imovel]);
@@ -2741,7 +2742,7 @@ function Despesas({ t, imoveis }) {
             <thead>
               <tr className="text-left" style={{ color: t.textMuted }}>
                 <th className="py-2 pr-3">Competência</th><th className="py-2 pr-3">Unidade</th>
-                <th className="py-2 pr-3">Categoria</th><th className="py-2 pr-3">Descrição</th><th className="py-2 pr-3">Valor</th>
+                <th className="py-2 pr-3">Categoria</th><th className="py-2 pr-3">Descrição</th><th className="py-2 pr-3">Tipo</th><th className="py-2 pr-3">Valor</th><th className="py-2 pr-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -2750,9 +2751,9 @@ function Despesas({ t, imoveis }) {
                   <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO }}>{d.data ? new Date(d.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
                   <td className="py-2.5 pr-3">{d.unidade ?? <Badge t={t} tone="gold">Geral</Badge>}</td>
                   <td className="py-2.5 pr-3">{d.categoria}</td>
-                  <td className="py-2.5 pr-3">{d.descricao ?? "—"}</td>
+                  <td className="py-2.5 pr-3">{d.descricao ?? "—"}</td><td className="py-2.5 pr-3"><span className="inline-block rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: (d as any).investimento ? '#fff4d6' : '#eaf6ef', color: (d as any).investimento ? '#8a6d1f' : '#137a45' }}>{(d as any).investimento ? 'Investimento' : 'Fixa'}</span></td>
                   <td className="py-2.5 pr-3" style={{ fontFamily: FONT_MONO, color: t.negative }}>{money(d.valor)}</td>
-                </tr>
+                <td className="py-2.5 pr-3 text-right"><button onClick={() => alternarInv.mutate({ id: d.id, investimento: !(d as any).investimento })} className="rounded-lg px-2 py-1 text-[11px]" style={{ background: t.bg, border: 1 + 'px solid ' + t.border, color: t.textMuted }}>Trocar</button></td></tr>
               ))}
             </tbody>
           </table>
