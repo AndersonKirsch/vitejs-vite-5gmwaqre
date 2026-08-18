@@ -1301,7 +1301,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
         <KpiCard
           t={t}
           icon={Percent}
-          label="ROI mensal"
+          label="ROI do período"
                     value={c.investimentoTotal > 0 ? `${((periodoTotais.lucro / c.investimentoTotal) * 100).toFixed(2)}%` : '0.00%'}
         />
       </div>
@@ -1456,7 +1456,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
                 <th className="py-2 pr-3">Desp. totais</th>
                 <th className="py-2 pr-3">Lucro</th>
                 <th className="py-2 pr-3">Ocupação</th>
-                <th className="py-2 pr-3">ROI mensal</th>
+                <th className="py-2 pr-3">ROI do período</th>
               </tr>
             </thead>
             <tbody>
@@ -1665,7 +1665,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
               <th className="py-2 pr-3">Desp. específica</th>
               <th className="py-2 pr-3">Rateio recebido</th>
               <th className="py-2 pr-3">Lucro</th>
-              <th className="py-2 pr-3">ROI mensal</th>
+              <th className="py-2 pr-3">ROI do período</th>
               <th className="py-2 pr-3"></th>
             </tr>
           </thead>
@@ -1822,7 +1822,7 @@ function ImovelCard({ t, building, onOpen }) {
               className="text-[10px] uppercase"
               style={{ color: t.textMuted, fontFamily: FONT_BODY }}
             >
-              Receita / mês
+              Receita do período
             </div>
             <div
               className="text-[13px] font-semibold"
@@ -1836,7 +1836,7 @@ function ImovelCard({ t, building, onOpen }) {
               className="text-[10px] uppercase"
               style={{ color: t.textMuted, fontFamily: FONT_BODY }}
             >
-              Lucro / mês
+              Lucro do período
             </div>
             <div
               className="text-[13px] font-semibold"
@@ -1867,7 +1867,7 @@ function ImovelCard({ t, building, onOpen }) {
               className="text-[10px] uppercase"
               style={{ color: t.textMuted, fontFamily: FONT_BODY }}
             >
-              ROI mensal
+              ROI do período
             </div>
             <div
               className="text-[13px] font-semibold"
