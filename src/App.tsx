@@ -605,7 +605,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
                 }}
                 formatter={(v) => money(v)}
               />
-              <Area
+              <Area label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }}
                 type="monotone"
                 dataKey="lucro"
                 stroke={t.gold}
@@ -2613,8 +2613,8 @@ function Financeiro({ t, imoveis }) {
             <YAxis stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
             <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
             <Legend wrapperStyle={{ fontSize: 12, fontFamily: FONT_BODY }} />
-            <Bar dataKey="entradas" name="Entradas" fill={t.positive} radius={[6, 6, 0, 0]} barSize={16} />
-            <Bar dataKey="saidas" name="Saídas" fill={t.negative} radius={[6, 6, 0, 0]} barSize={16} />
+            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="entradas" name="Entradas" fill={t.positive} radius={[6, 6, 0, 0]} barSize={16} />
+            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="saidas" name="Saídas" fill={t.negative} radius={[6, 6, 0, 0]} barSize={16} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -2708,7 +2708,7 @@ function Despesas({ t, imoveis }) {
             <XAxis type="number" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
             <YAxis type="category" dataKey="categoria" stroke={t.textMuted} fontSize={11} tickLine={false} axisLine={false} width={110} />
             <Tooltip contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12 }} formatter={(v) => money(v)} />
-            <Bar dataKey="valor" fill={t.negative} radius={[0, 6, 6, 0]} barSize={14} />
+            <Bar label={{ position: 'top', fontSize: 9, fill: t.textMuted, formatter: (v) => (Math.abs(Number(v)) >= 1000 ? (Number(v)/1000).toFixed(1) + 'k' : String(v)) }} dataKey="valor" fill={t.negative} radius={[0, 6, 6, 0]} barSize={14} />
           </BarChart>
         </ResponsiveContainer>
       </div>
