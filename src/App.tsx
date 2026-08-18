@@ -2787,7 +2787,7 @@ function Relatorios({ t, imoveis }) {
   };
 
   const exportarReceitas = () => baixarCsv(
-    receitas.map((r) => [r.data ?? "", r.unidade ?? "", r.categoria, (r.hospede ?? "").replace(/;/g, ","), (r as any).bruto?.toFixed(2), (r as any).taxa?.toFixed(2), r.valor.toFixed(2), r.status]),
+    receitas.map((r) => [r.data ?? "", r.unidade ?? "", r.categoria, (r.hospede ?? "").replace(/;/g, ","), (r as any).bruto?.toFixed(2), (Number((r as any).bruto ?? r.valor) - r.valor).toFixed(2), r.valor.toFixed(2), r.status]),
     ["Data", "Unidade", "Origem", "Hóspede", "Valor bruto", "Taxa", "Valor líquido", "Status"],
     `receitas_${MESES[deIdx].key}_a_${MESES[ateIdx].key}.csv`
   );
@@ -2808,7 +2808,7 @@ function Relatorios({ t, imoveis }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
           <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Relatório de receitas</h3>
-          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{receitas.length} lançamentos · Bruto {money(receitas.reduce((s, r) => s + Number((r as any).bruto ?? r.valor), 0))} · Taxas {money(receitas.reduce((s, r) => s + Number((r as any).taxa ?? 0), 0))} · Líquido {money(receitas.reduce((s, r) => s + r.valor, 0))}</p>
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{receitas.length} lançamentos · Bruto {money(receitas.reduce((s, r) => s + Number((r as any).bruto ?? r.valor), 0))} · Taxas {money(receitas.reduce((s, r) => s + (Number((r as any).bruto ?? r.valor) - r.valor), 0))} · Líquido {money(receitas.reduce((s, r) => s + r.valor, 0))}</p>
           <button onClick={exportarReceitas} disabled={isLoading || receitas.length === 0} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg w-fit" style={{ background: t.primary, color: "#fff", fontFamily: FONT_BODY, opacity: receitas.length === 0 ? 0.5 : 1 }}>
             Baixar CSV
           </button>
