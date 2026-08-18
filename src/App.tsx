@@ -350,7 +350,7 @@ function Dashboard({ t, imoveis }) {
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
   const receitaBruta = totais.receita;
-  const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
+  const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const CAT_INV = [String.fromCharCode(77,111,98,105,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(77,97,110,117,116,101,110,99,97,111),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,111,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,99,97,111)]; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
   const despesas = totais.despesasTotais;
   const lucro = totais.lucro;
   const investimentoTotal = imoveis.reduce(
@@ -374,11 +374,7 @@ function Dashboard({ t, imoveis }) {
   // TODO: calcular a partir de reservas (noites ocupadas / dias do mês / unidades ativas).
   const ocupacaoMedia = imoveis.length ? Math.round(imoveis.reduce((acc: any, b: any) => acc + Number(b.unidades?.[0]?.ocupacao ?? 0), 0) / imoveis.length) : 0;
 
-  const porImovel = imoveis.map((b) => ({
-    nome: b.nome.split(' ').slice(-1)[0],
-    receita: Math.round(resumo?.porImovel?.[b.id]?.receita ?? 0),
-    lucro: Math.round(resumo?.porImovel?.[b.id]?.lucro ?? 0),
-  }));
+  const porImovel = imoveis.flatMap((b) => (b.unidades || []).map((u) => { const nUn = Math.max(1, (b.unidades || []).length); const rec = Number(u.receitaMes || 0); return { nome: u.numero, receita: Math.round(rec), lucro: Math.round(rec * 0.91 - (Number(resumo?.despesasFixas || 0) / nUn)) }; })).sort((a, b) => b.receita - a.receita);
   // Ocupação por imóvel ainda depende de "diárias ocupadas / dias do mês" — calcule a
   // partir de `reservas` (check_in/check_out) quando for construir a tela de indicadores.
   const ocupacaoPorImovel = imoveis.map((b) => ({
@@ -447,7 +443,7 @@ function Dashboard({ t, imoveis }) {
           icon={CalendarDays}
           label="Ticket Médio / Diária"
           value={money(ticketMedio)}
-        /><KpiCard t={t} icon={TrendingUp} label={"Média bruta / mês"} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={"Média líquida / mês"} value={money(mediaLiquidaMes)} />
+        /><KpiCard t={t} icon={TrendingUp} label={"Média bruta / mês"} value={money(mediaBrutaMes)} /><KpiCard t={t} icon={TrendingUp} label={"Média líquida / mês"} value={money(mediaLiquidaMes)} /><KpiCard t={t} icon={Wallet} label={String.fromCharCode(68,101,115,112,101,115,97,115,32,102,105,120,97,115)} value={money(resumo?.despesasFixas || 0)} /><KpiCard t={t} icon={Building2} label={String.fromCharCode(73,110,118,101,115,116,105,109,101,110,116,111,115)} value={money(resumo?.investimentos || 0)} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -628,7 +624,7 @@ function Dashboard({ t, imoveis }) {
             className="text-sm font-semibold mb-4"
             style={{ color: t.text, fontFamily: FONT_DISPLAY }}
           >
-            Receita e lucro por imóvel
+            Receita e lucro por flat
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={porImovel}>

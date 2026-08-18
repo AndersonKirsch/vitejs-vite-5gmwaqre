@@ -95,7 +95,7 @@ export function useDashboardResumo(
         totais.lucro += p.lucro;
       }
 
-      const ms=new Set(); (reservasRes.data??[]).forEach((r)=>ms.add(String(r.check_in).slice(0,7))); (receitasManuaisRes.data??[]).forEach((r)=>ms.add(String(r.competencia).slice(0,7))); return { porImovel, totais, periodo, mesesComReceita: ms.size };
+      const INV=[String.fromCharCode(77,111,98,237,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,243,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,231,227,111),String.fromCharCode(77,97,110,117,116,101,110,231,227,111)]; let investimentos=0, despesasFixas=0; (despGeraisRes.data??[]).forEach((d)=>{const v=Number(d.valor||0); if(INV.indexOf(d.categoria)>=0) investimentos+=v; else despesasFixas+=v;}); const ms=new Set(); (reservasRes.data??[]).forEach((r)=>ms.add(String(r.check_in).slice(0,7))); (receitasManuaisRes.data??[]).forEach((r)=>ms.add(String(r.competencia).slice(0,7))); const porUnidade = {}; (reservasRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); (receitasManuaisRes.data??[]).forEach((r)=>{ porUnidade[r.unidade_id]=(porUnidade[r.unidade_id]||0)+Number(r.valor_liquido||0); }); return { porImovel, porUnidade, totais, periodo, mesesComReceita: ms.size, investimentos, despesasFixas };
     },
   });
 }
