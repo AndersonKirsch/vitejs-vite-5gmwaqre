@@ -2808,7 +2808,7 @@ function Relatorios({ t, imoveis }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-2xl p-5 flex flex-col gap-3" style={{ background: t.surface, border: `1px solid ${t.border}` }}>
           <h3 className="text-sm font-semibold" style={{ color: t.text, fontFamily: FONT_DISPLAY }}>Relatório de receitas</h3>
-          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{receitas.length} lançamentos · Total {money(receitas.reduce((s, r) => s + r.valor, 0))}</p>
+          <p className="text-[12px]" style={{ color: t.textMuted, fontFamily: FONT_BODY }}>{receitas.length} lançamentos · Bruto {money(receitas.reduce((s, r) => s + Number((r as any).bruto ?? r.valor), 0))} · Taxas {money(receitas.reduce((s, r) => s + Number((r as any).taxa ?? 0), 0))} · Líquido {money(receitas.reduce((s, r) => s + r.valor, 0))}</p>
           <button onClick={exportarReceitas} disabled={isLoading || receitas.length === 0} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg w-fit" style={{ background: t.primary, color: "#fff", fontFamily: FONT_BODY, opacity: receitas.length === 0 ? 0.5 : 1 }}>
             Baixar CSV
           </button>
