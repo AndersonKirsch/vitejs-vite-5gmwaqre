@@ -165,7 +165,7 @@ function computeBuilding(b) {
       const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
           const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
-            const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
+            const receitaLiquida = receitaBruta * 0.91;
               const despesasEspecificasTotal = b.unidades.reduce((s, u) => s + Number(u.despesasEspecificas ?? 0), 0);
                 const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
                   const lucro = receitaLiquida - despesasTotais;
@@ -350,7 +350,7 @@ function Dashboard({ t, imoveis }) {
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
   const receitaBruta = totais.receita;
-  const receitaLiquida = receitaBruta * 0.91;
+  const receitaLiquida = receitaBruta * 0.91; const nMeses = resumo?.mesesComReceita || 1; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = receitaLiquida / nMeses;
   const despesas = totais.despesasTotais;
   const lucro = totais.lucro;
   const investimentoTotal = imoveis.reduce(
