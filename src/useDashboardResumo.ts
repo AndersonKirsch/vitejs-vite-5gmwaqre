@@ -50,7 +50,7 @@ export function useDashboardResumo(
       const despEspecificasRes = await supabase.from('despesas_especificas').select('unidade_id, competencia, valor').in('unidade_id', todasUnidadeIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
       if (despEspecificasRes.error) throw despEspecificasRes.error;
 
-      const despGeraisRes = await supabase.from('despesas_gerais').select('imovel_id, competencia, valor').in('imovel_id', todosImovelIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
+      const despGeraisRes = await supabase.from('despesas_gerais').select('imovel_id, competencia, valor, categoria').in('imovel_id', todosImovelIds).gte('competencia', inicio).lt('competencia', fimExclusivo);
       if (despGeraisRes.error) throw despGeraisRes.error;
 
       const porImovel: Record<string, ResumoImovel> = {};
