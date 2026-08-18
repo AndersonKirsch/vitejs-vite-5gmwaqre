@@ -19,7 +19,7 @@ export interface DespesaGeral {
   id: string;
   categoria: string;
   descricao: string | null;
-  valor: number;
+  valor: number; investimento?: boolean;
   competencia: string;
 }
 
@@ -164,7 +164,7 @@ export function useAdicionarDespesaGeral() {
     }) => {
       const { error } = await supabase.from('despesas_gerais').insert({
         imovel_id: nova.imovelId,
-        categoria: nova.categoria,
+        categoria: nova.categoria, investimento: !!(nova as any).investimento,
         descricao: nova.descricao,
         valor: nova.valor,
         competencia: nova.competencia, // formato "YYYY-MM-01"

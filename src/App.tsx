@@ -1033,7 +1033,7 @@ function NovaUnidadeForm({ t, onClose, onSave }) {
 
 function NovaDespesaGeralForm({ t, onClose, onSave, categorias, numUnidadesAtivas }) {
   const [f, setF] = useState({
-    categoria: 'Condomínio',
+    categoria: 'Condomínio', investimento: false,
     descricao: '',
     valor: '',
   });
@@ -1050,7 +1050,7 @@ function NovaDespesaGeralForm({ t, onClose, onSave, categorias, numUnidadesAtiva
     >
       <div className="grid grid-cols-1 gap-3">
         <Field t={t} label="Categoria">
-          <input style={inputStyle} className={'rounded-lg px-3 py-2 text-sm outline-none'} list={'lista-categorias'} value={f.categoria} onChange={set('categoria')} placeholder={'Escolha ou digite uma nova'} /><datalist id={'lista-categorias'}>{(categorias || []).map((c) => (<option key={c} value={c} />))}</datalist>
+          <input style={inputStyle} className={'rounded-lg px-3 py-2 text-sm outline-none'} list={'lista-categorias'} value={f.categoria} onChange={set('categoria')} placeholder={'Escolha ou digite uma nova'} /><datalist id={'lista-categorias'}>{(categorias || []).map((c) => (<option key={c} value={c} />))}</datalist><label className={'flex items-center gap-2 mt-2 text-[12px] cursor-pointer'} style={{ color: t.textMuted }}><input type={'checkbox'} checked={!!f.investimento} onChange={(e) => setF({ ...f, investimento: e.target.checked })} />É investimento (não entra no cálculo do ROI)</label>
         </Field>
         <Field t={t} label="Descrição">
           <input
@@ -1192,7 +1192,7 @@ function BuildingDetail({ t, building, onBack }) { const [editando, setEditando]
       imovelId: building.id,
       categoria: d.categoria,
       descricao: d.descricao,
-      valor: d.valor,
+      valor: d.valor, investimento: !!d.investimento,
       competencia: `${MESES[MESES.length - 1].key}-01`, // lançada no mês atual por padrão
     });
   const removeDespesa = (id) => removerDespesaGeral.mutate(id);
