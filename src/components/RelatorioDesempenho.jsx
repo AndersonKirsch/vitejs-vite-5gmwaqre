@@ -68,6 +68,7 @@ function GraficoLinha({ meses }) {
   const { topo, ticks } = escala(Math.max(...vals.map((d) => d.v), 1), 3);
   const step = pw / Math.max(vals.length - 1, 1);
   const pts = vals.map((d, i) => [ml + step * i, mt + ph - (d.v / topo) * ph]);
+  if (!pts.length) return null;
   const linha = 'M ' + pts.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L ');
   const area = linha + ' L ' + pts[pts.length - 1][0].toFixed(1) + ',' + (mt + ph) + ' L ' + pts[0][0].toFixed(1) + ',' + (mt + ph) + ' Z';
   return (
