@@ -63,7 +63,7 @@ function mapImovel(row: any, rec: any = {}, ocupMed: any = {}, noitesMap: any = 
       categoria: d.categoria,
       descricao: d.descricao,
       valor: Number(d.valor),
-      competencia: d.competencia,
+      competencia: d.competencia, investimento: (d as any).investimento === true,
     })),
   };
 }
