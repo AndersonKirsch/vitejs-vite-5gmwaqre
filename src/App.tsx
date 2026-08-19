@@ -167,7 +167,7 @@ function computeBuilding(b) {
       const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
           const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
-            const receitaLiquida = receitaRecebida;
+            const receitaLiquida = receitaBruta;
               const despesasEspecificasTotal = b.unidades.reduce((s, u) => s + Number(u.despesasEspecificas ?? 0), 0);
                 const despesasTotais = despesasGeraisTotal + despesasEspecificasTotal;
                   const lucro = receitaLiquida - despesasTotais;
