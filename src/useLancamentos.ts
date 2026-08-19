@@ -79,7 +79,7 @@ export function useLancamentos(imovelId: string, unidadeIds: string[], mesInicio
         data: r.competencia,
         mes: r.competencia.slice(0, 7),
         tipo: "receita" as const,
-        categoria: r.categoria ?? "Airbnb",
+      categoria: r.categoria === 'Diárias' ? 'Airbnb' : (r.categoria === 'Locação direta' || r.categoria === 'Aluguel mensal' ? 'Direta' : (r.categoria ?? 'Outros')),
         descricao: r.descricao,
         hospede: null,
         unidade: numeroPorUnidade[r.unidade_id] ?? null,
