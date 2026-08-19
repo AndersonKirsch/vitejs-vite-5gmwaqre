@@ -24,6 +24,31 @@ function escala(max, nTicks = 4) {
   const topo = passo * nTicks;
   return { topo, ticks: Array.from({ length: nTicks + 1 }, (_, i) => i * passo) };
 }
+function GraficoCategorias({ itens, total }) {
+  if (!itens.length) return null;
+  const max = Math.max.apply(null, itens.map(function (c) { return c.total; }));
+  return (
+    <div>
+      {itens.map(function (c, i) {
+        const pctBarra = (c.total / max) * 100;
+        const pctTotal = total > 0 ? (c.total / total) * 100 : 0;
+        const ehInv = Number(c.investimento || 0) > c.total / 2;
+        return (
+          <div key={c.nome} style={{ marginBottom: i === itens.length - 1 ? 0 : 7 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, marginBottom: 3 }}>
+              <span style={{ fontWeight: 700, color: '#221f19' }}>{c.nome}</span>
+              <span style={{ color: '#6b6760' }}>{brl(c.total)} <span style={{ color: '#a09b8e' }}>({pct(pctTotal)})</span></span>
+            </div>
+            <div style={{ height: 10, borderRadius: 5, background: '#f0ece4', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: pctBarra + '%', borderRadius: 5, background: ehInv ? '#c8981f' : '#2a78d6' }} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function GraficoBarras({ meses }) {
   const W = 900, H = 258, ml = 58, mr = 8, mt = 18, mb = 38;
   const pw = W - ml - mr, ph = H - mt - mb;
@@ -169,6 +194,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
   const d = dados || {};
   const meses = d.meses || [];
   const flats = d.flats || [];
+  const categorias = (d.categorias || []).filter((c) => Number(c.total || 0) > 0).sort((x, y) => y.total - x.total);
   const origens = (d.origens || []).filter((o) => Number(o.valor || 0) > 0);
   const k = d.kpis || {};
 
@@ -342,7 +368,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
                 O lucro liquido do periodo (<b>{brl(k.lucroLiquido)}</b>) corresponde ao lucro operacional menos as taxas de plataforma ({brl(k.taxasPlataforma)}).
               </p>
 
-              <Titulo sub={'Receita acumulada e participacao no total'}>Desempenho por unidade</Titulo>
+              <Titulo sub={'Barra azul = despesa fixa - barra dourada = investimento'}>Despesas por categoria</Titulo><Card><GraficoCategorias itens={categorias} total={categorias.reduce(function (acc, c) { return acc + c.total; }, 0)} /></Card><Titulo sub={'Receita acumulada e participacao no total'}>Desempenho por unidade</Titulo>
               <table className={'w-full border-collapse text-[11.8px]'}>
                 <thead>
                   <tr className={'text-[9.2px] uppercase tracking-[1.1px] text-[#8a8578]'}>

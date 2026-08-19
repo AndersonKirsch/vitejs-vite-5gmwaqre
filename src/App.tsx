@@ -400,6 +400,7 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
     meses: (tendencia || []).filter((m: any) => Number(m.receita || 0) > 0 || Number(m.despesa || 0) > 0).map((m: any) => ({ label: m.label || m.mes, receita: Number(m.receita || 0), despesa: Number(m.despesa || 0) })),
     totais: { receita: receitaBruta, despesa: despesas },
     flats: imoveis.flatMap((b: any) => (b.unidades || []).map((u: any) => ({ nome: u.numero, situacao: u.situacao, receita: Number(u.receitaMes || 0) }))).sort((a: any, b: any) => b.receita - a.receita),
+    categorias: (function () { const m = {}; imoveis.forEach(function (b) { (b.despesasGerais || []).forEach(function (x) { const k = x.categoria || 'Outros'; if (!m[k]) m[k] = { nome: k, total: 0, investimento: 0 }; m[k].total += Number(x.valor || 0); if (x.investimento === true) m[k].investimento += Number(x.valor || 0); }); }); return Object.keys(m).map(function (k) { return m[k]; }); })(),
     origens: (origemReservas || []).map((o: any) => ({ nome: o.nome, valor: Number(o.valor || 0) })),
   };
 
