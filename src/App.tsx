@@ -352,7 +352,7 @@ function Dashboard({ t, imoveis }) {
 
   const totais = resumo?.totais ?? { receita: 0, despesasTotais: 0, lucro: 0 };
   const receitaBruta = Number((totais as any).receitaBruta || totais.receita); const receitaRecebida = totais.receita;
-  const receitaLiquida = receitaBruta; const nMeses = resumo?.mesesComReceita || 1; const CAT_INV = [String.fromCharCode(77,111,98,105,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(77,97,110,117,116,101,110,99,97,111),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,111,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,99,97,111)]; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = Number(totais.receita || 0) / nMeses;
+  const receitaLiquida = receitaRecebida; const nMeses = resumo?.mesesComReceita || 1; const CAT_INV = [String.fromCharCode(77,111,98,105,108,105,97),String.fromCharCode(69,110,120,111,118,97,108),String.fromCharCode(77,97,110,117,116,101,110,99,97,111),String.fromCharCode(67,111,122,105,110,104,97),String.fromCharCode(84,101,99,110,111,108,111,103,105,97),String.fromCharCode(77,111,118,101,105,115),String.fromCharCode(69,108,101,116,114,111),String.fromCharCode(73,110,115,116,97,108,97,99,97,111)]; const mediaBrutaMes = receitaBruta / nMeses; const mediaLiquidaMes = Number(totais.receita || 0) / nMeses;
   const despesas = totais.despesasTotais;
   const lucro = totais.lucro;
 const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   const investimentoTotal = imoveis.reduce(
@@ -367,7 +367,9 @@ const lucroOperacional = receitaLiquida - Number(resumo?.despesasFixas || 0);   
   const roiMensal = investimentoTotal
     ? ((lucroOperacional / investimentoTotal) * 100).toFixed(2)
     : '0.00';
-  const roiAnual = (roiMensal * 12).toFixed(1);
+  // `roiMensal` e o ROI acumulado do PERIODO (a janela vai ate 12 meses), nao um valor
+  // mensal. Anualizar exige primeiro dividir pelos meses com receita (`nMeses`).
+  const roiAnual = ((Number(roiMensal) / nMeses) * 12).toFixed(1);
   const totalUnidadesAtivas = imoveis.reduce(
     (s, b) => s + b.unidades.filter((u) => u.situacao === 'Ativo').length,
     0
