@@ -194,7 +194,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
   const d = dados || {};
   const meses = d.meses || [];
   const flats = d.flats || [];
-  const categorias = (d.categorias || []).filter((c) => Number(c.total || 0) > 0).sort((x, y) => y.total - x.total);
+  const catTodas = (d.categorias || []).filter((c) => Number(c.total || 0) > 0).sort((x, y) => y.total - x.total); const catTop = catTodas.slice(0, 8); const catResto = catTodas.slice(8); const categorias = catResto.length ? catTop.concat([{ nome: 'Outras (' + catResto.length + ')', total: catResto.reduce((a2, c) => a2 + c.total, 0), investimento: catResto.reduce((a2, c) => a2 + Number(c.investimento || 0), 0) }]) : catTop;
   const origens = (d.origens || []).filter((o) => Number(o.valor || 0) > 0);
   const k = d.kpis || {};
 
