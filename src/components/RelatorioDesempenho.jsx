@@ -322,7 +322,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
                 </div>
               </Card>
             </div>
-            <Rodape pagina={1} total={2} />
+            <Rodape pagina={1} total={3} />
           </section>
 
           <section className={'pdf-page pdf-page-break relative overflow-hidden bg-white'} style={{ width: PAGE_W, height: PAGE_H }}>
@@ -368,7 +368,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
                 O lucro liquido do periodo (<b>{brl(k.lucroLiquido)}</b>) corresponde ao lucro operacional menos as taxas de plataforma ({brl(k.taxasPlataforma)}).
               </p>
 
-              <Titulo sub={'Barra azul = despesa fixa - barra dourada = investimento'}>Despesas por categoria</Titulo><Card><GraficoCategorias itens={categorias} total={categorias.reduce(function (acc, c) { return acc + c.total; }, 0)} /></Card><Titulo sub={'Receita acumulada e participacao no total'}>Desempenho por unidade</Titulo>
+              <Titulo sub={'Barra azul = despesa fixa - barra dourada = investimento'}>Despesas por categoria</Titulo><Card><GraficoCategorias itens={categorias} total={categorias.reduce(function (acc, c) { return acc + c.total; }, 0)} /></Card></div><Rodape pagina={2} total={3} periodo={d.periodoLabel} /></section><section className={'pdf-page pdf-page-break relative overflow-hidden bg-white'} style={{ width: PAGE_W, height: PAGE_H }}><div className={'px-[14mm] pt-[12mm]'}><Titulo sub={'Receita acumulada e participacao no total'}>Desempenho por unidade</Titulo>
               <table className={'w-full border-collapse text-[11.8px]'}>
                 <thead>
                   <tr className={'text-[9.2px] uppercase tracking-[1.1px] text-[#8a8578]'}>
@@ -392,7 +392,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
                 </tbody>
               </table>
             </div>
-            <Rodape pagina={2} total={2} periodo={d.periodoLabel} />
+            <Rodape pagina={3} total={3} periodo={d.periodoLabel} />
           </section>
         </div>
       </div>
