@@ -261,7 +261,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
               <Titulo>Indicadores do periodo</Titulo>
               <div className={'grid grid-cols-3 gap-[3.4mm]'}>
                 <Kpi label={'Taxas de plataforma'} valor={brl(k.taxasPlataforma)} />
-                <Kpi label={'Despesas (gerais + especificas)'} valor={brl(k.despesas)} />
+                
                 <Kpi label={'Despesas fixas'} valor={brl(k.despesasFixas)} />
                 <Kpi label={'Investimentos'} valor={brl(k.investimentos)} />
                 <Kpi label={'Ocupacao media'} valor={k.ocupacaoMedia + '%'} />
