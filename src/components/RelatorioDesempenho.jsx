@@ -268,7 +268,7 @@ export default function RelatorioDesempenho({ dados, nomeArquivo }) {
                 <Kpi label={'Ticket medio / diaria'} valor={brl(k.ticketMedio)} />
                 <Kpi label={'Media bruta / mes'} valor={brl(k.mediaBrutaMes)} />
                 <Kpi label={'Media liquida / mes'} valor={brl(k.mediaLiquidaMes)} />
-                <Kpi label={'Lucro operacional'} valor={brl(totalLucro)} />
+                <Kpi label={'Lucro antes de investimentos'} valor={brl(totalLucro)} />
               </div>
 
               <Titulo sub={'Barra azul = receita bruta - barra vermelha = despesas'}>Receita x Despesas por mes</Titulo>
