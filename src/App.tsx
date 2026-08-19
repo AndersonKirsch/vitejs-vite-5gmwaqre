@@ -164,7 +164,7 @@ const CORES_ORIGEM = {
 /* ---------------------------------------------------------------- */
 function computeBuilding(b) {
     const ativas = b.unidades.filter((u) => u.situacao === 'Ativo');
-      const despesasGeraisTotal = b.despesasGerais.reduce((s, d) => s + Number(d.valor ?? 0), 0);
+      const despesasGeraisTotal = b.despesasGerais.filter((x) => (x as any).investimento !== true).reduce((s, d) => s + Number(d.valor ?? 0), 0);
         const rateio = ativas.length ? despesasGeraisTotal / ativas.length : 0;
           const receitaBruta = ativas.reduce((s, u) => s + Number(u.receitaMes ?? 0), 0);
             const receitaLiquida = receitaBruta;
