@@ -148,7 +148,7 @@ export function useTendenciaMensal(
             .lte('competencia', fim),
           supabase
             .from('despesas_gerais')
-            .select('valor, competencia, imovel_id')
+            .select('valor, competencia, imovel_id, investimento')
             .gte('competencia', inicio)
             .lte('competencia', fim),
         ]);
@@ -168,7 +168,7 @@ export function useTendenciaMensal(
         const despEsp = (despesasEspRes.data ?? [])
           .filter((d) => d.competencia.slice(0, 7) === key)
           .reduce((s, d) => s + Number(d.valor), 0);
-        const despGer = (despesasGeraisRes.data ?? [])
+        const despGer = (despesasGeraisRes.data ?? []).filter((x: any) => x.investimento !== true)
           .filter((d) => d.competencia.slice(0, 7) === key)
           .reduce((s, d) => s + Number(d.valor), 0);
         const despesa = despEsp + despGer;
@@ -177,7 +177,7 @@ export function useTendenciaMensal(
           label,
                 receita: receitaTotal,
           despesa,
-                lucro: receitaTotal * 0.91 - despesa,
+                lucro: receitaTotal - despesa,
         };
       });
     },
