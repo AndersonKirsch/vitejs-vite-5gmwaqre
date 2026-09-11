@@ -41,6 +41,23 @@ export function useFinanceiroMensal(
       const despGeraisRes = await supabase.from('despesas_gerais').select('competencia, valor').eq('imovel_id', imovelId).gte('competencia', inicio).lt('competencia', fimExclusivo);
       if (despGeraisRes.error) throw despGeraisRes.error;
 
+      // Base do ROI: investimento das unidades (aquisicao + reforma + moveis),
+      // a mesma conta usada no card do imovel. Tambem precisamos de quantas
+      // unidades estao ativas para saber a capacidade de ocupacao.
+      const unidadesRes = await supabase.from('unidades').select('id, situacao, valor_aquisicao, valor_reforma, valor_moveis').in('id', unidadeIds);
+      if (unidadesRes.error) throw unidadesRes.error;
+
+      const investimentoTotal = (unidadesRes.data ?? []).reduce(
+        (s, u: any) => s + Number(u.valor_aquisicao ?? 0) + Number(u.valor_reforma ?? 0) + Number(u.valor_moveis ?? 0), 0);
+      const unidadesAtivas = (unidadesRes.data ?? []).filter((u: any) => u.situacao === 'Ativo').length;
+
+      // Para contar noites ocupadas precisamos das reservas que ENCOSTAM no
+      // periodo, nao so das que comecam nele: uma estadia iniciada no mes
+      // anterior ocupa noites deste mes. Consulta separada para nao alterar
+      // a forma como a receita e atribuida (essa continua pelo check-in).
+      const ocupRes = await supabase.from('reservas').select('check_in, check_out').in('unidade_id', unidadeIds).neq('status', 'Cancelado').lt('check_in', fimExclusivo).gt('check_out', inicio);
+      if (ocupRes.error) throw ocupRes.error;
+
       const meses = listarMeses(mesInicio, mesFim);
 
       return meses.map(({ chave, label }) => {
@@ -52,6 +69,20 @@ export function useFinanceiroMensal(
         const despesasTotais = despGerais + despEspecificas;
         const lucro = receita - despesasTotais;
 
+        // Ocupacao = noites vendidas / (dias do mes x unidades ativas).
+        // Conta so a parte da estadia que cai dentro deste mes.
+        const iniMes = Date.UTC(Number(chave.slice(0, 4)), Number(chave.slice(5, 7)) - 1, 1);
+        const fimMes = Date.UTC(Number(chave.slice(0, 4)), Number(chave.slice(5, 7)), 1);
+        const diasNoMes = (fimMes - iniMes) / 86400000;
+
+        let noites = 0;
+        for (const r of ocupRes.data ?? []) {
+          const ini = Math.max(diaUTC(r.check_in), iniMes);
+          const fim = Math.min(diaUTC(r.check_out), fimMes);
+          if (fim > ini) noites += (fim - ini) / 86400000;
+        }
+        const capacidade = diasNoMes * unidadesAtivas;
+
         return {
           mes: chave,
           label,
@@ -60,12 +91,18 @@ export function useFinanceiroMensal(
           despEspecificas,
           despesasTotais,
           lucro,
-          ocupacaoMedia: 0,
-          roiMensal: 0,
+          ocupacaoMedia: capacidade > 0 ? Math.round((noites / capacidade) * 100) : 0,
+          roiMensal: investimentoTotal > 0 ? (lucro / investimentoTotal) * 100 : 0,
         };
       });
     },
   });
+}
+
+// "2026-08-27" -> timestamp UTC do dia, sem o deslocamento de fuso que o
+// `new Date("2026-08-27")` local causaria (viraria dia 26 no Brasil).
+function diaUTC(data: string) {
+  return Date.UTC(Number(data.slice(0, 4)), Number(data.slice(5, 7)) - 1, Number(data.slice(8, 10)));
 }
 
 function primeiroDiaMesSeguinte(mesChave: string) {

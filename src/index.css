@@ -1,27 +1,80 @@
 @import 'tailwindcss';
 
+/* =====================================================================
+   IMPRESSAO
+   O app e um layout flex de largura livre. Ao imprimir, o navegador usa a
+   largura do papel como se fosse a da tela: em A4 retrato isso da ~794px,
+   os cards se espremem e os valores saem cortados ("R$ 135...").
+   A solucao e imprimir em paisagem, fixar uma largura de trabalho e
+   reduzir tudo com zoom ate caber na folha.
+   ===================================================================== */
 @media print {
-  aside, nav, .no-print { display: none !important; }
-  main { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
-  body { background: #fff !important; }
-  .bloco-impressao { break-inside: avoid; }
+  @page { size: A4 landscape; margin: 8mm; }
 
-  /* Preserva as cores dos cards, do grafico e das tabelas no papel.
-     Sem isto o navegador imprime tudo em branco e preto. */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Barra lateral, menus e tudo marcado como no-print saem fora. */
+  aside, nav, .no-print { display: none !important; }
+
+  /* A barra de titulo do app (com o botao de tema) nao precisa ir ao papel. */
+  #root > div > div > header { display: none !important; }
+
+  html, body {
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
   }
 
-  /* O conteudo fica num <div>, nao num <main> — sem isto ele continua
-     estreito no papel porque o layout e flex com a barra lateral. */
-  body, #root, #root > div { display: block !important; height: auto !important; overflow: visible !important; }
+  /* Largura de trabalho fixa + zoom para caber na largura util da folha
+     (A4 paisagem com 8mm de margem = ~1062px). 1180 x 0,88 = ~1038px. */
+  body { zoom: 0.88; }
+  #root,
+  #root > div,
+  #root > div > div {
+    display: block !important;
+    width: 1180px !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
 
-  /* Nao quebra um card, uma tabela ou o grafico no meio de uma pagina. */
-  .rounded-2xl, table, svg { break-inside: avoid; page-break-inside: avoid; }
+  main { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+
+  /* Preserva as cores dos cards, do grafico e das tabelas no papel. */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* Nao quebra uma LINHA de tabela no meio, e repete o cabecalho a cada
+     pagina. Blocos grandes (grafico, cards largos) PODEM quebrar — travar
+     eles era o que deixava paginas quase em branco. */
+  tr, .bloco-impressao { break-inside: avoid; page-break-inside: avoid; }
   thead { display: table-header-group; }
 
-  @page { margin: 12mm; }
+  img, svg { max-width: 100% !important; height: auto !important; }
+
+  /* Na impressao o Tailwind enxerga a folha como uma tela estreita e joga
+     os cards para 2 por linha. Como a largura de trabalho e fixa em 1180px,
+     reativamos as colunas manualmente. A ordem importa: sm antes, lg depois,
+     para o lg vencer nos elementos que tem as duas classes. */
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .lg\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+  .sm\:flex-row { flex-direction: row !important; }
+}
+
+/* Se o usuario trocar para Retrato na janela de impressao, a largura util
+   cai para ~733px. Sem reduzir o zoom o conteudo voltaria a ser cortado. */
+@media print and (orientation: portrait) {
+  /* Sem redeclarar @page aqui: isso criaria uma referencia circular com a
+     regra de paisagem acima e o Chrome acabaria virando a folha sozinho.
+     Aqui so ajustamos a escala para a largura menor. */
+  body { zoom: 0.62; }
 }
 
 .bloco-impressao { grid-column: 1 / -1; width: 100%; }
