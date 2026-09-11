@@ -9,7 +9,10 @@
    reduzir tudo com zoom ate caber na folha.
    ===================================================================== */
 @media print {
-  @page { size: A4 landscape; margin: 8mm; }
+  /* Sem `size` aqui de proposito: quando a pagina declara o tamanho, o Chrome
+     esconde o seletor "Layout" e o usuario perde a opcao de virar a folha.
+     Declaramos so a margem e ajustamos a escala por orientacao mais abaixo. */
+  @page { margin: 8mm; }
 
   /* Barra lateral, menus e tudo marcado como no-print saem fora. */
   aside, nav, .no-print { display: none !important; }
@@ -24,9 +27,9 @@
     background: #fff !important;
   }
 
-  /* Largura de trabalho fixa + zoom para caber na largura util da folha
-     (A4 paisagem com 8mm de margem = ~1062px). 1180 x 0,88 = ~1038px. */
-  body { zoom: 0.88; }
+  /* Largura de trabalho fixa. O zoom muda conforme a orientacao escolhida:
+     retrato tem ~733px uteis, paisagem ~1062px. */
+  body { zoom: 0.62; }
   #root,
   #root > div,
   #root > div > div {
@@ -70,11 +73,10 @@
 
 /* Se o usuario trocar para Retrato na janela de impressao, a largura util
    cai para ~733px. Sem reduzir o zoom o conteudo voltaria a ser cortado. */
-@media print and (orientation: portrait) {
-  /* Sem redeclarar @page aqui: isso criaria uma referencia circular com a
-     regra de paisagem acima e o Chrome acabaria virando a folha sozinho.
-     Aqui so ajustamos a escala para a largura menor. */
-  body { zoom: 0.62; }
+/* Em paisagem sobra largura, entao o conteudo pode sair maior.
+   1180 x 0,88 = ~1038px, cabe nos ~1062px uteis de uma A4 deitada. */
+@media print and (orientation: landscape) {
+  body { zoom: 0.88; }
 }
 
 .bloco-impressao { grid-column: 1 / -1; width: 100%; }
