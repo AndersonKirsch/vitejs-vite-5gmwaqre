@@ -5,9 +5,23 @@
   main { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
   body { background: #fff !important; }
   .bloco-impressao { break-inside: avoid; }
+
+  /* Preserva as cores dos cards, do grafico e das tabelas no papel.
+     Sem isto o navegador imprime tudo em branco e preto. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* O conteudo fica num <div>, nao num <main> — sem isto ele continua
+     estreito no papel porque o layout e flex com a barra lateral. */
+  body, #root, #root > div { display: block !important; height: auto !important; overflow: visible !important; }
+
+  /* Nao quebra um card, uma tabela ou o grafico no meio de uma pagina. */
+  .rounded-2xl, table, svg { break-inside: avoid; page-break-inside: avoid; }
+  thead { display: table-header-group; }
+
+  @page { margin: 12mm; }
 }
 
 .bloco-impressao { grid-column: 1 / -1; width: 100%; }
-
-
-
